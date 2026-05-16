@@ -119,19 +119,31 @@
 
             <!-- Search & Product List -->
             <div class="bg-white p-5 lg:p-6 rounded-2xl shadow-sm border border-gray-100 flex-1">
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+                <div class="flex flex-col mb-6 gap-4">
                     <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
                         <div class="bg-purple-100 text-purple-600 p-1.5 rounded-lg"><i data-lucide="package" class="w-5 h-5"></i></div>
                         Daftar Produk
                     </h2>
-                    <div class="flex items-center gap-2 w-full sm:w-auto">
-                        <div class="relative flex-1 sm:w-72">
-                            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-400"><i data-lucide="search" class="w-4 h-4"></i></span>
-                            <input type="text" id="input-search" class="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-full focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 outline-none bg-gray-50/50 text-sm transition-all" placeholder="Ketik nama produk / SKU...">
+                    
+                    <div class="flex flex-col xl:flex-row gap-3 items-stretch xl:items-center">
+                        <div class="flex items-center gap-2 flex-1">
+                            <div class="relative flex-1">
+                                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-400"><i data-lucide="search" class="w-4 h-4"></i></span>
+                                <input type="text" id="input-search" class="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 outline-none bg-gray-50/50 text-sm transition-all" placeholder="Ketik nama produk / SKU...">
+                            </div>
+                            <button onclick="openScannerModal()" class="active-tap p-2.5 bg-purple-100 text-purple-600 hover:bg-purple-200 rounded-xl transition-colors flex-shrink-0 shadow-sm border border-purple-200 h-full aspect-square flex items-center justify-center" title="Scan Barcode">
+                                <i data-lucide="scan-line" class="w-5 h-5"></i>
+                            </button>
                         </div>
-                        <button onclick="openScannerModal()" class="active-tap p-2.5 bg-purple-100 text-purple-600 hover:bg-purple-200 rounded-full transition-colors flex-shrink-0 shadow-sm border border-purple-200" title="Scan Barcode">
-                            <i data-lucide="scan-line" class="w-5 h-5"></i>
-                        </button>
+                        
+                        <div class="flex gap-2 flex-col sm:flex-row w-full xl:w-auto">
+                            <select id="filter-kategori" class="w-full sm:w-auto text-sm border border-gray-200 rounded-xl py-2.5 px-3 bg-gray-50/50 text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:bg-white transition-colors cursor-pointer outline-none">
+                                <option value="">Semua Kategori</option>
+                            </select>
+                            <select id="filter-merk" class="w-full sm:w-auto text-sm border border-gray-200 rounded-xl py-2.5 px-3 bg-gray-50/50 text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:bg-white transition-colors cursor-pointer outline-none">
+                                <option value="">Semua Merk</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
 
@@ -336,9 +348,14 @@
         let products = [];
         let cart = [];
         let searchTerm = '';
+        let selectedCategory = '';
+        let selectedBrand = '';
         let currentPage = 1;
         let itemsPerPage = 20;
         let html5QrCode; // Variabel global untuk scanner
+
+        let availableCategories = [];
+        let availableBrands = [];
 
         const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTCxz1GPm7QU9IS1yBiSjvIdNTLUsvvplOCyT_R3XH4O-LuVbHoY_bXn1LTH5lpnlolJ29BhUgEdnFm/pub?gid=240870130&single=true&output=csv';
         const STORAGE_KEY = 'keranjangKuning_history';
@@ -500,6 +517,8 @@
         const elCartTotal = document.getElementById('cart-total-price');
         const elBtnCheckout = document.getElementById('btn-checkout');
         const elSearch = document.getElementById('input-search');
+        const elFilterKategori = document.getElementById('filter-kategori');
+        const elFilterMerk = document.getElementById('filter-merk');
         const elModal = document.getElementById('checkout-modal');
         const elModalContent = document.getElementById('checkout-modal-content');
         
@@ -529,6 +548,8 @@
                     const colIdx = {
                         nama: headers.findIndex(h => h.includes('nama')),
                         sku: headers.findIndex(h => h === 'sku' || h.includes('sku')),
+                        kategori: headers.findIndex(h => h.includes('kategori') || h.includes('category')),
+                        merk: headers.findIndex(h => h.includes('merk') || h.includes('merek') || h.includes('brand')),
                         unit: headers.findIndex(h => h.includes('unit')),
                         stokGudang: headers.findIndex(h => h.includes('gudang')),
                         stokToko: headers.findIndex(h => h.includes('toko')),
@@ -538,12 +559,24 @@
                         partai: headers.findIndex(h => h.includes('partai')),
                     };
 
+                    const categoriesSet = new Set();
+                    const brandsSet = new Set();
+
                     products = parsed.slice(1).map((row, index) => {
                         if (!row[colIdx.nama]) return null;
+                        
+                        const kategori = colIdx.kategori !== -1 ? (row[colIdx.kategori] || '').trim() : '-';
+                        const merk = colIdx.merk !== -1 ? (row[colIdx.merk] || '').trim() : '-';
+
+                        if (kategori && kategori !== '-') categoriesSet.add(kategori);
+                        if (merk && merk !== '-') brandsSet.add(merk);
+
                         return {
                             id: colIdx.sku !== -1 && row[colIdx.sku] ? row[colIdx.sku] : `PROD-${index}`,
                             nama: colIdx.nama !== -1 ? row[colIdx.nama] : '-',
                             sku: colIdx.sku !== -1 ? row[colIdx.sku] : '-',
+                            kategori: kategori,
+                            merk: merk,
                             unit: colIdx.unit !== -1 ? row[colIdx.unit] : '-',
                             stok: {
                                 gudang: colIdx.stokGudang !== -1 ? parseInt(row[colIdx.stokGudang] || 0) : 0,
@@ -557,6 +590,22 @@
                             }
                         };
                     }).filter(p => p !== null);
+
+                    // Populate filters
+                    availableCategories = Array.from(categoriesSet).sort();
+                    availableBrands = Array.from(brandsSet).sort();
+
+                    if (availableCategories.length > 0) {
+                        elFilterKategori.innerHTML = '<option value="">Semua Kategori</option>' + availableCategories.map(c => `<option value="${c}">${c}</option>`).join('');
+                    } else {
+                        elFilterKategori.classList.add('hidden'); // Sembunyikan jika tidak ada kolom kategori
+                    }
+
+                    if (availableBrands.length > 0) {
+                        elFilterMerk.innerHTML = '<option value="">Semua Merk</option>' + availableBrands.map(m => `<option value="${m}">${m}</option>`).join('');
+                    } else {
+                        elFilterMerk.classList.add('hidden'); // Sembunyikan jika tidak ada kolom merk
+                    }
                 }
                 
                 elLoading.classList.add('hidden');
@@ -571,10 +620,12 @@
 
         // Getter for Filtered & Paginated Products
         function getFilteredProducts() {
-            return products.filter(p => 
-                p.nama.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                p.sku.toLowerCase().includes(searchTerm.toLowerCase())
-            );
+            return products.filter(p => {
+                const matchSearch = p.nama.toLowerCase().includes(searchTerm.toLowerCase()) || p.sku.toLowerCase().includes(searchTerm.toLowerCase());
+                const matchCategory = selectedCategory === '' || p.kategori === selectedCategory;
+                const matchBrand = selectedBrand === '' || p.merk === selectedBrand;
+                return matchSearch && matchCategory && matchBrand;
+            });
         }
 
         // Render Functions
@@ -602,11 +653,14 @@
                 const cartItem = cart.find(item => item.product.id === product.id);
                 const isInCart = !!cartItem;
 
+                let badgesHtml = `<span class="text-[11px] font-bold text-purple-500 bg-purple-50 px-2 py-0.5 rounded-md tracking-wider">${product.sku}</span>`;
+                if(product.merk && product.merk !== '-') badgesHtml += `<span class="text-[10px] font-semibold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-md border border-gray-200 ml-2">${product.merk}</span>`;
+
                 return `
                 <div class="border border-gray-100 bg-white p-5 rounded-2xl flex flex-col justify-between hover:shadow-lg transition-all duration-300 group">
                     <div>
-                        <div class="flex justify-between items-start mb-2">
-                            <span class="text-[11px] font-bold text-purple-500 bg-purple-50 px-2 py-0.5 rounded-md tracking-wider">${product.sku}</span>
+                        <div class="flex items-center mb-2 flex-wrap gap-1">
+                            ${badgesHtml}
                         </div>
                         <h3 class="font-bold text-gray-800 leading-snug mb-3 line-clamp-2 group-hover:text-purple-600 transition-colors" title="${product.nama.replace(/"/g, '&quot;')}">${product.nama}</h3>
                         <div class="flex gap-2.5 mb-4 text-[11px] font-semibold">
@@ -854,6 +908,18 @@
         // Event Listeners
         elSearch.addEventListener('input', (e) => {
             searchTerm = e.target.value;
+            currentPage = 1;
+            renderProducts();
+        });
+
+        elFilterKategori.addEventListener('change', (e) => {
+            selectedCategory = e.target.value;
+            currentPage = 1;
+            renderProducts();
+        });
+
+        elFilterMerk.addEventListener('change', (e) => {
+            selectedBrand = e.target.value;
             currentPage = 1;
             renderProducts();
         });

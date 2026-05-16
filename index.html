@@ -31,72 +31,72 @@
         }
     </script>
 
-    <!-- Definisi Warna Dasar CSS -->
+    <!-- Definisi Warna Dasar CSS (Menggunakan Spasi, bukan Koma agar terbaca oleh Tailwind) -->
     <style>
         :root {
             /* Kuning Default */
-            --theme-50: 254, 252, 232;
-            --theme-100: 254, 249, 195;
-            --theme-200: 254, 240, 138;
-            --theme-300: 253, 224, 71;
-            --theme-400: 250, 204, 21;
-            --theme-500: 234, 179, 8;
-            --theme-600: 202, 138, 4;
-            --theme-700: 161, 98, 7;
-            --theme-800: 133, 77, 14;
-            --theme-900: 113, 63, 18;
+            --theme-50: 254 252 232;
+            --theme-100: 254 249 195;
+            --theme-200: 254 240 138;
+            --theme-300: 253 224 71;
+            --theme-400: 250 204 21;
+            --theme-500: 234 179 8;
+            --theme-600: 202 138 4;
+            --theme-700: 161 98 7;
+            --theme-800: 133 77 14;
+            --theme-900: 113 63 18;
         }
 
         [data-theme="blue"] {
-            --theme-50: 239, 246, 255;
-            --theme-100: 219, 234, 254;
-            --theme-200: 191, 219, 254;
-            --theme-300: 147, 197, 253;
-            --theme-400: 96, 165, 250;
-            --theme-500: 59, 130, 246;
-            --theme-600: 37, 99, 235;
-            --theme-700: 29, 78, 216;
-            --theme-800: 30, 64, 175;
-            --theme-900: 30, 58, 138;
+            --theme-50: 239 246 255;
+            --theme-100: 219 234 254;
+            --theme-200: 191 219 254;
+            --theme-300: 147 197 253;
+            --theme-400: 96 165 250;
+            --theme-500: 59 130 246;
+            --theme-600: 37 99 235;
+            --theme-700: 29 78 216;
+            --theme-800: 30 64 175;
+            --theme-900: 30 58 138;
         }
 
         [data-theme="emerald"] {
-            --theme-50: 236, 253, 245;
-            --theme-100: 209, 250, 229;
-            --theme-200: 167, 243, 208;
-            --theme-300: 110, 231, 183;
-            --theme-400: 52, 211, 153;
-            --theme-500: 16, 185, 129;
-            --theme-600: 5, 150, 105;
-            --theme-700: 4, 120, 87;
-            --theme-800: 6, 95, 70;
-            --theme-900: 6, 78, 59;
+            --theme-50: 236 253 245;
+            --theme-100: 209 250 229;
+            --theme-200: 167 243 208;
+            --theme-300: 110 231 183;
+            --theme-400: 52 211 153;
+            --theme-500: 16 185 129;
+            --theme-600: 5 150 105;
+            --theme-700: 4 120 87;
+            --theme-800: 6 95 70;
+            --theme-900: 6 78 59;
         }
 
         [data-theme="rose"] {
-            --theme-50: 255, 241, 242;
-            --theme-100: 255, 228, 230;
-            --theme-200: 254, 205, 211;
-            --theme-300: 253, 164, 175;
-            --theme-400: 251, 113, 133;
-            --theme-500: 244, 63, 94;
-            --theme-600: 225, 29, 72;
-            --theme-700: 190, 18, 60;
-            --theme-800: 159, 18, 57;
-            --theme-900: 136, 19, 55;
+            --theme-50: 255 241 242;
+            --theme-100: 255 228 230;
+            --theme-200: 254 205 211;
+            --theme-300: 253 164 175;
+            --theme-400: 251 113 133;
+            --theme-500: 244 63 94;
+            --theme-600: 225 29 72;
+            --theme-700: 190 18 60;
+            --theme-800: 159 18 57;
+            --theme-900: 136 19 55;
         }
 
         [data-theme="purple"] {
-            --theme-50: 250, 245, 255;
-            --theme-100: 243, 232, 255;
-            --theme-200: 233, 213, 255;
-            --theme-300: 216, 180, 254;
-            --theme-400: 192, 132, 252;
-            --theme-500: 168, 85, 247;
-            --theme-600: 147, 51, 234;
-            --theme-700: 126, 34, 206;
-            --theme-800: 107, 33, 168;
-            --theme-900: 88, 28, 135;
+            --theme-50: 250 245 255;
+            --theme-100: 243 232 255;
+            --theme-200: 233 213 255;
+            --theme-300: 216 180 254;
+            --theme-400: 192 132 252;
+            --theme-500: 168 85 247;
+            --theme-600: 147 51 234;
+            --theme-700: 126 34 206;
+            --theme-800: 107 33 168;
+            --theme-900: 88 28 135;
         }
 
         /* Custom scrollbar */
@@ -137,7 +137,7 @@
 <body class="bg-[#f8fafc] text-gray-800 font-sans min-h-screen pb-32 lg:pb-8 relative">
 
     <!-- Loading Overlay -->
-    <div id="loading-overlay" class="fixed inset-0 bg-white/80 backdrop-blur-sm z-[110] flex items-center justify-center">
+    <div id="loading-overlay" class="fixed inset-0 bg-white/80 backdrop-blur-sm z-[9999] flex items-center justify-center">
         <div class="flex flex-col items-center gap-3">
             <div class="animate-spin rounded-full h-14 w-14 border-4 border-gray-200 border-t-primary-500"></div>
             <p class="text-primary-700 font-semibold animate-pulse">Memuat Produk...</p>
@@ -145,7 +145,7 @@
     </div>
 
     <!-- Error Overlay -->
-    <div id="error-overlay" class="fixed inset-0 bg-gray-50 z-[110] items-center justify-center hidden p-4">
+    <div id="error-overlay" class="fixed inset-0 bg-gray-50 z-[9999] items-center justify-center hidden p-4">
         <div class="bg-red-50 border border-red-200 text-red-700 p-6 rounded-2xl shadow-lg max-w-md w-full text-center">
             <i data-lucide="alert-triangle" class="mx-auto w-12 h-12 mb-3 text-red-500"></i>
             <h2 class="font-bold text-lg mb-2">Terjadi Kesalahan</h2>
@@ -154,15 +154,15 @@
     </div>
 
     <!-- Custom Toast Popup -->
-    <div id="toast-popup" class="fixed top-4 left-1/2 -translate-x-1/2 z-[120] transition-all duration-300 opacity-0 -translate-y-full pointer-events-none">
+    <div id="toast-popup" class="fixed top-4 left-1/2 -translate-x-1/2 z-[9999] transition-all duration-300 opacity-0 -translate-y-full pointer-events-none">
         <div id="toast-content" class="px-5 py-3 rounded-full shadow-xl flex items-center gap-2.5 font-semibold text-sm">
             <i id="toast-icon" data-lucide="alert-circle" class="w-5 h-5"></i>
             <span id="toast-msg">Pesan</span>
         </div>
     </div>
 
-    <!-- Header (Diperbarui Z-Index nya agar menu dropdown tema tidak terpotong) -->
-    <header class="bg-white/90 backdrop-blur-md shadow-sm sticky top-0 z-[100] border-b border-gray-200">
+    <!-- Header Z-Index tinggi agar tidak terpotong -->
+    <header class="bg-white/90 backdrop-blur-md shadow-sm sticky top-0 z-[9000] border-b border-gray-200">
         <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
             <div class="flex items-center gap-2.5">
                 <div class="bg-primary-400 p-2 rounded-xl">
@@ -177,7 +177,8 @@
                     <button onclick="toggleThemeMenu()" class="flex items-center gap-1 font-bold bg-white text-gray-700 px-3 py-1.5 rounded-full shadow-sm border border-gray-200 hover:bg-gray-50 transition-colors active-tap">
                         <i data-lucide="palette" class="w-4 h-4 text-primary-500"></i> <span class="hidden sm:inline text-sm">Tema</span>
                     </button>
-                    <div id="theme-menu" class="absolute right-0 mt-2 w-48 bg-white border border-gray-100 rounded-2xl shadow-xl p-3 hidden flex-col gap-1 z-[110]">
+                    <!-- Z-Index 10000 agar dropdown tampil sempurna menutupi keranjang kanan di PC -->
+                    <div id="theme-menu" class="absolute right-0 mt-2 w-56 bg-white border border-gray-100 rounded-2xl shadow-xl p-3 hidden flex-col gap-1 z-[10000]">
                         <h3 class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2 px-1">Pilih Tema Warna</h3>
                         
                         <button onclick="setTheme('yellow')" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-50 rounded-xl text-sm font-semibold text-gray-700 transition-colors">
@@ -315,7 +316,7 @@
             </div>
         </div>
 
-        <!-- Overlay Mobile Cart (Disesuaikan z-index lg:z-auto untuk PC) -->
+        <!-- Overlay Mobile Cart -->
         <div id="cart-modal-overlay" class="fixed inset-0 z-[80] lg:z-auto bg-gray-900/60 p-4 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300 lg:static lg:bg-transparent lg:p-0 lg:opacity-100 lg:pointer-events-auto lg:col-span-5 xl:col-span-4 lg:block" onclick="if(event.target === this) closeMobileCart()">
             
             <div id="cart-section" class="bg-white rounded-3xl shadow-2xl w-full max-w-md max-h-[92vh] flex flex-col transform scale-95 transition-transform duration-300 lg:rounded-2xl lg:shadow-sm lg:sticky lg:top-24 lg:max-w-none lg:max-h-[calc(100vh-6.5rem)] lg:scale-100 lg:transform-none">
@@ -380,7 +381,7 @@
     </div>
 
     <!-- Checkout Modal -->
-    <div id="checkout-modal" class="fixed inset-0 z-[100] items-center justify-center bg-gray-900/60 p-4 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+    <div id="checkout-modal" class="fixed inset-0 z-[120] items-center justify-center bg-gray-900/60 p-4 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col max-h-[92vh] transform scale-95 transition-transform duration-300" id="checkout-modal-content">
             <div class="bg-gradient-to-br from-primary-300 to-primary-500 p-6 text-center relative overflow-hidden">
                 <div class="absolute -right-6 -top-6 text-primary-200/50">
@@ -445,7 +446,7 @@
     </div>
 
     <!-- History Modal -->
-    <div id="history-modal" class="fixed inset-0 z-[100] items-center justify-center bg-gray-900/60 p-4 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+    <div id="history-modal" class="fixed inset-0 z-[120] items-center justify-center bg-gray-900/60 p-4 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[92vh] transform scale-95 transition-transform duration-300" id="history-modal-content">
             <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
                 <h2 class="text-lg font-bold flex items-center gap-2 text-gray-800">
@@ -464,7 +465,7 @@
     </div>
 
     <!-- Scanner Modal -->
-    <div id="scanner-modal" class="fixed inset-0 z-[100] items-center justify-center bg-gray-900/80 p-4 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+    <div id="scanner-modal" class="fixed inset-0 z-[120] items-center justify-center bg-gray-900/80 p-4 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col transform scale-95 transition-transform duration-300" id="scanner-modal-content">
             <div class="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
                 <h2 class="text-lg font-bold flex items-center gap-2 text-gray-800">
@@ -566,7 +567,8 @@
                     g = hue2rgb(p, q, h);
                     b = hue2rgb(p, q, h - 1/3);
                 }
-                return `${Math.round(r * 255)}, ${Math.round(g * 255)}, ${Math.round(b * 255)}`;
+                // Hapus koma untuk format yang disupport Tailwind CDN
+                return `${Math.round(r * 255)} ${Math.round(g * 255)} ${Math.round(b * 255)}`;
             }
 
             const map = {
@@ -972,7 +974,7 @@
                     </div>
                     
                     <div class="w-full sm:w-72 flex flex-col justify-end sm:border-l sm:border-gray-100 sm:pl-5">
-                        <select id="price-tier-${product.id}" onchange="updateCatalogPriceTier('${product.id}', this.value)" class="w-full text-xs font-bold text-gray-700 bg-gray-50 border border-gray-200 rounded-lg p-2.5 mb-2 appearance-none cursor-pointer outline-none focus:ring-2 focus:ring-primary-400 transition-colors bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%239ca3af%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E')] bg-[length:10px_10px] bg-no-repeat bg-[position:right_10px_center]">
+                        <select id="price-tier-${product.id}" onchange="updateCatalogPriceTier('${product.id}', this.value)" class="w-full text-xs font-bold text-gray-700 bg-gray-50 border border-gray-200 rounded-lg p-2.5 mb-2 appearance-none cursor-pointer outline-none focus:ring-2 focus:ring-primary-400 transition-colors bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%236b7280%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E')] bg-[length:10px_10px] bg-no-repeat bg-[position:right_10px_center]">
                             <option value="eceran" ${activeTier === 'eceran' ? 'selected' : ''}>Eceran: ${formatRupiah(product.harga.eceran)} /${product.unit}</option>
                             <option value="grosir" ${activeTier === 'grosir' ? 'selected' : ''}>Grosir: ${formatRupiah(product.harga.grosir)} /${product.unit}</option>
                             <option value="partai" ${activeTier === 'partai' ? 'selected' : ''}>Partai: ${formatRupiah(product.harga.partai)} /${product.unit}</option>
@@ -1076,7 +1078,7 @@
                     
                     <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 mt-2">
                         <div class="flex-1 w-full space-y-2">
-                            <select onchange="updateCartPriceTier('${item.product.id}', this.value)" class="w-full text-xs font-semibold border border-gray-200 rounded-lg py-2 px-2.5 bg-gray-50 text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:bg-white transition-colors cursor-pointer appearance-none bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%239ca3af%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E')] bg-[length:10px_10px] bg-no-repeat bg-[position:right_10px_center]">
+                            <select onchange="updateCartPriceTier('${item.product.id}', this.value)" class="w-full text-xs font-semibold border border-gray-200 rounded-lg py-2 px-2.5 bg-gray-50 text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:bg-white transition-colors cursor-pointer appearance-none bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%236b7280%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E')] bg-[length:10px_10px] bg-no-repeat bg-[position:right_10px_center]">
                                 <option value="eceran" ${item.priceTier === 'eceran' ? 'selected' : ''}>Harga Eceran (${formatRupiah(item.product.harga.eceran)})</option>
                                 <option value="grosir" ${item.priceTier === 'grosir' ? 'selected' : ''}>Harga Grosir (${formatRupiah(item.product.harga.grosir)})</option>
                                 <option value="partai" ${item.priceTier === 'partai' ? 'selected' : ''}>Harga Partai (${formatRupiah(item.product.harga.partai)})</option>

@@ -443,6 +443,52 @@
             }, 300);
         };
 
+        function syncProductButtons() {
+            const actionContainers = document.querySelectorAll('[id^="action-container-"]');
+            actionContainers.forEach(container => {
+                const productId = container.id.replace('action-container-', '');
+                const cartItem = cart.find(item => item.product.id === productId);
+                const isInCart = !!cartItem;
+                
+                if (isInCart) {
+                    const qtyInput = container.querySelector('input[type="number"]');
+                    if (qtyInput) {
+                        // Update input jika nilainya berubah di tempat lain (misal dari keranjang)
+                        if (parseInt(qtyInput.value) !== cartItem.qty) {
+                            qtyInput.value = cartItem.qty;
+                        }
+                    } else {
+                        // Ubah tombol jadi pengatur Qty
+                        container.innerHTML = `
+                            <div class="flex items-center justify-between bg-emerald-50 border border-emerald-200 rounded-xl p-1 shadow-sm">
+                                <button onclick="updateCartQty('${productId}', -1)" class="active-tap w-10 h-10 flex items-center justify-center bg-white rounded-lg text-emerald-600 hover:bg-emerald-100 shadow-sm border border-emerald-100">
+                                    <i data-lucide="minus" class="w-4 h-4"></i>
+                                </button>
+                                <div class="flex flex-col items-center justify-center">
+                                    <span class="text-[9px] font-bold text-emerald-600 uppercase tracking-wider mb-[-2px]">Qty</span>
+                                    <input type="number" onchange="updateCartQtyManual('${productId}', this.value)" value="${cartItem.qty}" class="text-sm font-black w-12 text-center bg-transparent outline-none text-emerald-800 focus:bg-white focus:ring-2 focus:ring-emerald-400 rounded-md transition-all" min="0" />
+                                </div>
+                                <button onclick="updateCartQty('${productId}', 1)" class="active-tap w-10 h-10 flex items-center justify-center bg-white rounded-lg text-emerald-600 hover:bg-emerald-100 shadow-sm border border-emerald-100">
+                                    <i data-lucide="plus" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                        `;
+                    }
+                } else {
+                    const btn = container.querySelector(`#btn-add-${productId}`);
+                    if (!btn) {
+                        // Kembalikan ke tombol "Tambah Keranjang" jika dihapus dari keranjang
+                        container.innerHTML = `
+                            <button id="btn-add-${productId}" onclick="addToCart('${productId}', this)" class="active-tap w-full py-2.5 bg-yellow-400 hover:bg-yellow-500 text-yellow-900 font-bold rounded-xl flex items-center justify-center gap-2 transition-all shadow-sm shadow-yellow-200 text-sm">
+                                <i data-lucide="plus-circle" class="w-4.5 h-4.5"></i> <span>Tambah Keranjang</span>
+                            </button>
+                        `;
+                    }
+                }
+            });
+            lucide.createIcons();
+        }
+
         // DOM Elements
         const elLoading = document.getElementById('loading-overlay');
         const elError = document.getElementById('error-overlay');
@@ -552,7 +598,11 @@
                 return;
             }
 
-            elProductList.innerHTML = paginated.map(product => `
+            elProductList.innerHTML = paginated.map(product => {
+                const cartItem = cart.find(item => item.product.id === product.id);
+                const isInCart = !!cartItem;
+
+                return `
                 <div class="border border-gray-100 bg-white p-5 rounded-2xl flex flex-col justify-between hover:shadow-lg transition-all duration-300 group">
                     <div>
                         <div class="flex justify-between items-start mb-2">
@@ -569,12 +619,29 @@
                         <div class="text-sm font-black text-yellow-600 mb-3 flex items-baseline gap-1">
                             ${formatRupiah(product.harga.eceran)} <span class="text-xs text-gray-400 font-medium font-normal">/${product.unit}</span>
                         </div>
-                        <button onclick="addToCart('${product.id}', this)" class="active-tap w-full py-2.5 bg-yellow-400 hover:bg-yellow-500 text-yellow-900 font-bold rounded-xl flex items-center justify-center gap-2 transition-all shadow-sm shadow-yellow-200 text-sm">
-                            <i data-lucide="plus-circle" class="w-4.5 h-4.5"></i> <span>Tambah Keranjang</span>
-                        </button>
+                        <div id="action-container-${product.id}" class="transition-transform duration-150">
+                            ${isInCart ? `
+                                <div class="flex items-center justify-between bg-emerald-50 border border-emerald-200 rounded-xl p-1 shadow-sm">
+                                    <button onclick="updateCartQty('${product.id}', -1)" class="active-tap w-10 h-10 flex items-center justify-center bg-white rounded-lg text-emerald-600 hover:bg-emerald-100 shadow-sm border border-emerald-100">
+                                        <i data-lucide="minus" class="w-4 h-4"></i>
+                                    </button>
+                                    <div class="flex flex-col items-center justify-center">
+                                        <span class="text-[9px] font-bold text-emerald-600 uppercase tracking-wider mb-[-2px]">Qty</span>
+                                        <input type="number" onchange="updateCartQtyManual('${product.id}', this.value)" value="${cartItem.qty}" class="text-sm font-black w-12 text-center bg-transparent outline-none text-emerald-800 focus:bg-white focus:ring-2 focus:ring-emerald-400 rounded-md transition-all" min="0" />
+                                    </div>
+                                    <button onclick="updateCartQty('${product.id}', 1)" class="active-tap w-10 h-10 flex items-center justify-center bg-white rounded-lg text-emerald-600 hover:bg-emerald-100 shadow-sm border border-emerald-100">
+                                        <i data-lucide="plus" class="w-4 h-4"></i>
+                                    </button>
+                                </div>
+                            ` : `
+                                <button id="btn-add-${product.id}" onclick="addToCart('${product.id}', this)" class="active-tap w-full py-2.5 bg-yellow-400 hover:bg-yellow-500 text-yellow-900 font-bold rounded-xl flex items-center justify-center gap-2 transition-all shadow-sm shadow-yellow-200 text-sm">
+                                    <i data-lucide="plus-circle" class="w-4.5 h-4.5"></i> <span>Tambah Keranjang</span>
+                                </button>
+                            `}
+                        </div>
                     </div>
-                </div>
-            `).join('');
+                </div>`;
+            }).join('');
 
             elPaginationControls.classList.remove('hidden');
             elPaginationInfo.innerText = `${currentPage} / ${totalPages}`;
@@ -625,6 +692,7 @@
                 btnDraft.className = "active-tap w-1/3 py-3.5 rounded-xl font-bold text-sm flex justify-center items-center gap-1.5 transition-all bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200";
 
                 lucide.createIcons();
+                syncProductButtons();
                 return;
             }
 
@@ -691,6 +759,7 @@
             btnDraft.className = "active-tap w-1/3 py-3.5 rounded-xl font-bold text-sm flex justify-center items-center gap-1.5 transition-all bg-blue-100 hover:bg-blue-200 text-blue-700 shadow-sm cursor-pointer border border-blue-200";
 
             lucide.createIcons();
+            syncProductButtons();
         }
 
         // Cart Actions
@@ -704,24 +773,15 @@
             } else {
                 cart.push({ product, qty: 1, priceTier: 'eceran', customPrice: product.harga.eceran, note: '' });
             }
-            renderCart();
+            renderCart(); 
             
-            // Visual feedback on the Add to Cart button
-            if (btnElement) {
-                const originalHTML = btnElement.innerHTML;
-                const originalClass = btnElement.className;
-                
-                // Change to success state (Green)
-                btnElement.className = "active-tap w-full py-2.5 bg-green-500 text-white font-bold rounded-xl flex items-center justify-center gap-2 transition-all shadow-sm shadow-green-200 text-sm";
-                btnElement.innerHTML = `<i data-lucide="check-circle" class="w-4.5 h-4.5"></i> <span>Berhasil Ditambah!</span>`;
-                lucide.createIcons();
-                
-                // Revert after 1 second
+            // Memberikan sedikit efek 'bounce' pada kontainer aksi
+            const actionContainer = document.getElementById(`action-container-${productId}`);
+            if (actionContainer) {
+                actionContainer.classList.add('scale-95');
                 setTimeout(() => {
-                    btnElement.className = originalClass;
-                    btnElement.innerHTML = originalHTML;
-                    lucide.createIcons();
-                }, 1000);
+                    actionContainer.classList.remove('scale-95');
+                }, 150);
             }
 
             // Add subtle notification/bounce effect on cart icon

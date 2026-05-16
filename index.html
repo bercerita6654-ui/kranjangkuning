@@ -44,7 +44,7 @@
 <body class="bg-[#f8fafc] text-gray-800 font-sans min-h-screen pb-32 lg:pb-8 relative">
 
     <!-- Loading Overlay -->
-    <div id="loading-overlay" class="fixed inset-0 bg-white/80 backdrop-blur-sm z-[60] flex items-center justify-center">
+    <div id="loading-overlay" class="fixed inset-0 bg-white/80 backdrop-blur-sm z-[110] flex items-center justify-center">
         <div class="flex flex-col items-center gap-3">
             <div class="animate-spin rounded-full h-14 w-14 border-4 border-gray-200 border-t-yellow-500"></div>
             <p class="text-yellow-700 font-semibold animate-pulse">Memuat Produk...</p>
@@ -52,7 +52,7 @@
     </div>
 
     <!-- Error Overlay -->
-    <div id="error-overlay" class="fixed inset-0 bg-gray-50 z-[60] items-center justify-center hidden p-4">
+    <div id="error-overlay" class="fixed inset-0 bg-gray-50 z-[110] items-center justify-center hidden p-4">
         <div class="bg-red-50 border border-red-200 text-red-700 p-6 rounded-2xl shadow-lg max-w-md w-full text-center">
             <i data-lucide="alert-triangle" class="mx-auto w-12 h-12 mb-3 text-red-500"></i>
             <h2 class="font-bold text-lg mb-2">Terjadi Kesalahan</h2>
@@ -61,7 +61,7 @@
     </div>
 
     <!-- Custom Toast Popup -->
-    <div id="toast-popup" class="fixed top-4 left-1/2 -translate-x-1/2 z-[100] transition-all duration-300 opacity-0 -translate-y-full pointer-events-none">
+    <div id="toast-popup" class="fixed top-4 left-1/2 -translate-x-1/2 z-[120] transition-all duration-300 opacity-0 -translate-y-full pointer-events-none">
         <div id="toast-content" class="px-5 py-3 rounded-full shadow-xl flex items-center gap-2.5 font-semibold text-sm">
             <i id="toast-icon" data-lucide="alert-circle" class="w-5 h-5"></i>
             <span id="toast-msg">Pesan</span>
@@ -188,15 +188,29 @@
             </div>
         </div>
 
-        <!-- Kolom Kanan: Keranjang (Juga Anchor Target di Mobile) -->
-        <div id="cart-section" class="lg:col-span-5 xl:col-span-4 scroll-mt-20">
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 lg:sticky lg:top-20 flex flex-col lg:max-h-[calc(100vh-6.5rem)]">
-                <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50/50 rounded-t-2xl">
+        <!-- Overlay Mobile Cart -->
+        <div id="cart-overlay" class="fixed inset-0 bg-gray-900/60 z-[70] opacity-0 pointer-events-none transition-opacity duration-300 lg:hidden" onclick="closeMobileCart()"></div>
+
+        <!-- Kolom Kanan: Keranjang (Slide Up di Mobile, Sticky di Desktop) -->
+        <div id="cart-section" class="fixed bottom-0 left-0 right-0 z-[80] translate-y-full transition-transform duration-300 ease-in-out lg:static lg:translate-y-0 lg:z-auto lg:col-span-5 xl:col-span-4">
+            <div class="bg-white rounded-t-3xl shadow-[0_-10px_40px_rgba(0,0,0,0.1)] border border-gray-100 lg:rounded-2xl lg:shadow-sm lg:sticky lg:top-20 flex flex-col max-h-[85vh] lg:max-h-[calc(100vh-6.5rem)] w-full">
+                
+                <!-- Mobile Swipe Handle -->
+                <div class="lg:hidden flex justify-center pt-3 pb-2 cursor-pointer" onclick="closeMobileCart()">
+                    <div class="w-12 h-1.5 bg-gray-300 rounded-full"></div>
+                </div>
+
+                <div class="p-4 lg:p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50/50 lg:rounded-t-2xl">
                     <h2 class="text-lg font-bold flex items-center gap-2 text-gray-800">
                         <div class="bg-yellow-100 text-yellow-600 p-1.5 rounded-lg"><i data-lucide="shopping-cart" class="w-5 h-5"></i></div>
                         Rincian Pesanan
                     </h2>
-                    <span id="cart-total-badge" class="bg-yellow-400 text-yellow-900 text-xs font-bold px-2 py-1 rounded-md hidden">0 Barang</span>
+                    <div class="flex items-center gap-3">
+                        <span id="cart-total-badge" class="bg-yellow-400 text-yellow-900 text-xs font-bold px-2 py-1 rounded-md hidden">0 Barang</span>
+                        <button class="lg:hidden text-gray-400 hover:text-gray-600 p-1 bg-white rounded-full border border-gray-200 shadow-sm" onclick="closeMobileCart()">
+                            <i data-lucide="x" class="w-4 h-4"></i>
+                        </button>
+                    </div>
                 </div>
                 
                 <div id="cart-list" class="p-5 overflow-y-auto flex-1 bg-white custom-scrollbar space-y-4">
@@ -237,7 +251,7 @@
                 <span class="text-xs font-semibold text-gray-500">Total Belanja</span>
                 <span id="mobile-cart-total" class="text-lg font-black text-gray-800">Rp 0</span>
             </div>
-            <button onclick="scrollToCart()" class="active-tap bg-yellow-400 text-yellow-900 px-6 py-3 rounded-xl font-bold shadow-sm flex items-center gap-2.5">
+            <button onclick="openMobileCart()" class="active-tap bg-yellow-400 text-yellow-900 px-6 py-3 rounded-xl font-bold shadow-sm flex items-center gap-2.5">
                 <i data-lucide="shopping-bag" class="w-5 h-5"></i>
                 Lihat Keranjang
                 <span id="mobile-cart-badge-bottom" class="bg-white text-yellow-900 rounded-md px-2 py-0.5 text-xs">0</span>
@@ -246,7 +260,7 @@
     </div>
 
     <!-- Checkout Modal -->
-    <div id="checkout-modal" class="fixed inset-0 z-50 items-center justify-center bg-gray-900/60 p-4 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+    <div id="checkout-modal" class="fixed inset-0 z-[90] items-center justify-center bg-gray-900/60 p-4 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col max-h-[92vh] transform scale-95 transition-transform duration-300" id="checkout-modal-content">
             <div class="bg-gradient-to-br from-yellow-300 to-yellow-500 p-6 text-center relative overflow-hidden">
                 <div class="absolute -right-6 -top-6 text-yellow-200/50">
@@ -310,7 +324,7 @@
     </div>
 
     <!-- History Modal -->
-    <div id="history-modal" class="fixed inset-0 z-50 items-center justify-center bg-gray-900/60 p-4 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+    <div id="history-modal" class="fixed inset-0 z-[90] items-center justify-center bg-gray-900/60 p-4 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[92vh] transform scale-95 transition-transform duration-300" id="history-modal-content">
             <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
                 <h2 class="text-lg font-bold flex items-center gap-2 text-gray-800">
@@ -329,7 +343,7 @@
     </div>
 
     <!-- Scanner Modal -->
-    <div id="scanner-modal" class="fixed inset-0 z-50 items-center justify-center bg-gray-900/80 p-4 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+    <div id="scanner-modal" class="fixed inset-0 z-[90] items-center justify-center bg-gray-900/80 p-4 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col transform scale-95 transition-transform duration-300" id="scanner-modal-content">
             <div class="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
                 <h2 class="text-lg font-bold flex items-center gap-2 text-gray-800">
@@ -464,15 +478,24 @@
         };
 
         // UI Interactions
-        window.scrollToCart = () => {
-            const cartSec = document.getElementById('cart-section');
-            cartSec.scrollIntoView({ behavior: 'smooth' });
-            // Subtle flash effect to highlight cart
-            setTimeout(() => {
-                const cartBox = cartSec.firstElementChild;
-                cartBox.classList.add('ring-4', 'ring-yellow-400', 'ring-opacity-50', 'transition-all');
-                setTimeout(() => cartBox.classList.remove('ring-4', 'ring-yellow-400', 'ring-opacity-50'), 800);
-            }, 300);
+        window.openMobileCart = () => {
+            const overlay = document.getElementById('cart-overlay');
+            const section = document.getElementById('cart-section');
+            if(overlay && section) {
+                overlay.classList.remove('opacity-0', 'pointer-events-none');
+                section.classList.remove('translate-y-full');
+                document.body.style.overflow = 'hidden';
+            }
+        };
+
+        window.closeMobileCart = () => {
+            const overlay = document.getElementById('cart-overlay');
+            const section = document.getElementById('cart-section');
+            if(overlay && section) {
+                overlay.classList.add('opacity-0', 'pointer-events-none');
+                section.classList.add('translate-y-full');
+                document.body.style.overflow = '';
+            }
         };
 
         function syncProductButtons() {

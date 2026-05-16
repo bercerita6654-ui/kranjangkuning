@@ -162,7 +162,7 @@
     </div>
 
     <!-- Header -->
-    <header class="bg-white/90 backdrop-blur-md shadow-sm sticky top-0 z-40 border-b border-gray-200">
+    <header class="bg-white/90 backdrop-blur-md shadow-sm sticky top-0 z-50 border-b border-gray-200">
         <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
             <div class="flex items-center gap-2.5">
                 <div class="bg-primary-400 p-2 rounded-xl">
@@ -177,7 +177,7 @@
                     <button onclick="toggleThemeMenu()" class="flex items-center gap-1 font-bold bg-white text-gray-700 px-3 py-1.5 rounded-full shadow-sm border border-gray-200 hover:bg-gray-50 transition-colors active-tap">
                         <i data-lucide="palette" class="w-4 h-4 text-primary-500"></i> <span class="hidden sm:inline text-sm">Tema</span>
                     </button>
-                    <div id="theme-menu" class="absolute right-0 mt-2 w-48 bg-white border border-gray-100 rounded-2xl shadow-xl p-3 hidden flex-col gap-1 z-50">
+                    <div id="theme-menu" class="absolute right-0 mt-2 w-48 bg-white border border-gray-100 rounded-2xl shadow-xl p-3 hidden flex-col gap-1 z-[60]">
                         <h3 class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2 px-1">Pilih Tema Warna</h3>
                         
                         <button onclick="setTheme('yellow')" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-50 rounded-xl text-sm font-semibold text-gray-700 transition-colors">
@@ -315,10 +315,10 @@
             </div>
         </div>
 
-        <!-- Overlay Mobile Cart -->
-        <div id="cart-modal-overlay" class="fixed inset-0 z-[80] bg-gray-900/60 p-4 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300 lg:static lg:bg-transparent lg:p-0 lg:opacity-100 lg:pointer-events-auto lg:col-span-5 xl:col-span-4 lg:block" onclick="if(event.target === this) closeMobileCart()">
+        <!-- Overlay Mobile Cart (Disesuaikan z-index lg:z-auto untuk PC) -->
+        <div id="cart-modal-overlay" class="fixed inset-0 z-[80] lg:z-auto bg-gray-900/60 p-4 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300 lg:static lg:bg-transparent lg:p-0 lg:opacity-100 lg:pointer-events-auto lg:col-span-5 xl:col-span-4 lg:block" onclick="if(event.target === this) closeMobileCart()">
             
-            <div id="cart-section" class="bg-white rounded-3xl shadow-2xl w-full max-w-md max-h-[92vh] flex flex-col transform scale-95 transition-transform duration-300 lg:rounded-2xl lg:shadow-sm lg:sticky lg:top-20 lg:max-w-none lg:max-h-[calc(100vh-6.5rem)] lg:scale-100 lg:transform-none">
+            <div id="cart-section" class="bg-white rounded-3xl shadow-2xl w-full max-w-md max-h-[92vh] flex flex-col transform scale-95 transition-transform duration-300 lg:rounded-2xl lg:shadow-sm lg:sticky lg:top-24 lg:max-w-none lg:max-h-[calc(100vh-6.5rem)] lg:scale-100 lg:transform-none">
                 
                 <div class="p-4 lg:p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50/50 rounded-t-3xl lg:rounded-t-2xl">
                     <h2 class="text-lg font-bold flex items-center gap-2 text-gray-800">
@@ -380,7 +380,7 @@
     </div>
 
     <!-- Checkout Modal -->
-    <div id="checkout-modal" class="fixed inset-0 z-[90] items-center justify-center bg-gray-900/60 p-4 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+    <div id="checkout-modal" class="fixed inset-0 z-[100] items-center justify-center bg-gray-900/60 p-4 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col max-h-[92vh] transform scale-95 transition-transform duration-300" id="checkout-modal-content">
             <div class="bg-gradient-to-br from-primary-300 to-primary-500 p-6 text-center relative overflow-hidden">
                 <div class="absolute -right-6 -top-6 text-primary-200/50">
@@ -444,7 +444,7 @@
     </div>
 
     <!-- History Modal -->
-    <div id="history-modal" class="fixed inset-0 z-[90] items-center justify-center bg-gray-900/60 p-4 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+    <div id="history-modal" class="fixed inset-0 z-[100] items-center justify-center bg-gray-900/60 p-4 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[92vh] transform scale-95 transition-transform duration-300" id="history-modal-content">
             <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
                 <h2 class="text-lg font-bold flex items-center gap-2 text-gray-800">
@@ -463,7 +463,7 @@
     </div>
 
     <!-- Scanner Modal -->
-    <div id="scanner-modal" class="fixed inset-0 z-[90] items-center justify-center bg-gray-900/80 p-4 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+    <div id="scanner-modal" class="fixed inset-0 z-[100] items-center justify-center bg-gray-900/80 p-4 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col transform scale-95 transition-transform duration-300" id="scanner-modal-content">
             <div class="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
                 <h2 class="text-lg font-bold flex items-center gap-2 text-gray-800">

@@ -137,10 +137,10 @@
                         </div>
                         
                         <div class="flex gap-2 flex-col sm:flex-row w-full xl:w-auto">
-                            <select id="filter-kategori" class="w-full sm:w-auto text-sm border border-gray-200 rounded-xl py-2.5 px-3 bg-gray-50/50 text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:bg-white transition-colors cursor-pointer outline-none">
+                            <select id="filter-kategori" class="w-full sm:w-auto text-sm border border-gray-200 rounded-xl py-2.5 px-3 bg-gray-50/50 text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:bg-white transition-colors cursor-pointer outline-none hidden">
                                 <option value="">Semua Kategori</option>
                             </select>
-                            <select id="filter-merk" class="w-full sm:w-auto text-sm border border-gray-200 rounded-xl py-2.5 px-3 bg-gray-50/50 text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:bg-white transition-colors cursor-pointer outline-none">
+                            <select id="filter-merk" class="w-full sm:w-auto text-sm border border-gray-200 rounded-xl py-2.5 px-3 bg-gray-50/50 text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:bg-white transition-colors cursor-pointer outline-none hidden">
                                 <option value="">Semua Merk</option>
                             </select>
                         </div>
@@ -358,6 +358,7 @@
         let availableBrands = [];
 
         const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTCxz1GPm7QU9IS1yBiSjvIdNTLUsvvplOCyT_R3XH4O-LuVbHoY_bXn1LTH5lpnlolJ29BhUgEdnFm/pub?gid=240870130&single=true&output=csv';
+        const REF_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTCxz1GPm7QU9IS1yBiSjvIdNTLUsvvplOCyT_R3XH4O-LuVbHoY_bXn1LTH5lpnlolJ29BhUgEdnFm/pub?gid=1564332470&single=true&output=csv';
         const STORAGE_KEY = 'keranjangKuning_history';
 
         // History Data Manager
@@ -537,10 +538,40 @@
         // Initial Data Fetch
         async function fetchData() {
             try {
-                const response = await fetch(CSV_URL);
-                if (!response.ok) throw new Error('Gagal mengambil data produk');
-                const text = await response.text();
-                const parsed = parseCSV(text);
+                // Fetch kedua file CSV secara bersamaan (Utama dan Referensi SKU)
+                const [mainRes, refRes] = await Promise.all([
+                    fetch(CSV_URL),
+                    fetch(REF_CSV_URL)
+                ]);
+
+                if (!mainRes.ok) throw new Error('Gagal mengambil data produk utama');
+                if (!refRes.ok) throw new Error('Gagal mengambil data referensi SKU (Merk/Kategori)');
+
+                const mainText = await mainRes.text();
+                const refText = await refRes.text();
+
+                const parsed = parseCSV(mainText);
+                const refParsed = parseCSV(refText);
+
+                // Buat kamus (Map) referensi dari file CSV ke-2
+                const refMap = {};
+                if (refParsed.length > 0) {
+                    const refHeaders = refParsed[0].map(h => h.toLowerCase().trim());
+                    const refSkuIdx = refHeaders.findIndex(h => h === 'sku' || h.includes('sku') || h.includes('kode'));
+                    
+                    for (let i = 1; i < refParsed.length; i++) {
+                        const row = refParsed[i];
+                        // Jika kolom sku tidak ketemu di header, default asumsikan kolom pertama (index 0)
+                        const sku = refSkuIdx !== -1 && row[refSkuIdx] ? row[refSkuIdx].trim() : (row[0] ? row[0].trim() : null);
+                        
+                        if (sku) {
+                            // Sesuai permintaan: Kolom ke 5 = index 4, Kolom ke 7 = index 6
+                            const kategori = row.length > 4 && row[4] ? row[4].trim() : '-';
+                            const merk = row.length > 6 && row[6] ? row[6].trim() : '-';
+                            refMap[sku] = { kategori, merk };
+                        }
+                    }
+                }
 
                 if (parsed.length > 0) {
                     const headers = parsed[0].map(h => h.toLowerCase().trim());
@@ -548,8 +579,6 @@
                     const colIdx = {
                         nama: headers.findIndex(h => h.includes('nama')),
                         sku: headers.findIndex(h => h === 'sku' || h.includes('sku')),
-                        kategori: headers.findIndex(h => h.includes('kategori') || h.includes('category')),
-                        merk: headers.findIndex(h => h.includes('merk') || h.includes('merek') || h.includes('brand')),
                         unit: headers.findIndex(h => h.includes('unit')),
                         stokGudang: headers.findIndex(h => h.includes('gudang')),
                         stokToko: headers.findIndex(h => h.includes('toko')),
@@ -565,16 +594,20 @@
                     products = parsed.slice(1).map((row, index) => {
                         if (!row[colIdx.nama]) return null;
                         
-                        const kategori = colIdx.kategori !== -1 ? (row[colIdx.kategori] || '').trim() : '-';
-                        const merk = colIdx.merk !== -1 ? (row[colIdx.merk] || '').trim() : '-';
+                        const skuValue = colIdx.sku !== -1 && row[colIdx.sku] ? row[colIdx.sku].trim() : '-';
+                        
+                        // Tarik data Kategori & Merk dari file referensi CSV kedua berdasarkan SKU yang cocok
+                        const refData = refMap[skuValue] || { kategori: '-', merk: '-' };
+                        const kategori = refData.kategori;
+                        const merk = refData.merk;
 
                         if (kategori && kategori !== '-') categoriesSet.add(kategori);
                         if (merk && merk !== '-') brandsSet.add(merk);
 
                         return {
-                            id: colIdx.sku !== -1 && row[colIdx.sku] ? row[colIdx.sku] : `PROD-${index}`,
+                            id: skuValue !== '-' ? skuValue : `PROD-${index}`,
                             nama: colIdx.nama !== -1 ? row[colIdx.nama] : '-',
-                            sku: colIdx.sku !== -1 ? row[colIdx.sku] : '-',
+                            sku: skuValue,
                             kategori: kategori,
                             merk: merk,
                             unit: colIdx.unit !== -1 ? row[colIdx.unit] : '-',
@@ -591,20 +624,18 @@
                         };
                     }).filter(p => p !== null);
 
-                    // Populate filters
+                    // Populate filters dropdowns UI
                     availableCategories = Array.from(categoriesSet).sort();
                     availableBrands = Array.from(brandsSet).sort();
 
                     if (availableCategories.length > 0) {
                         elFilterKategori.innerHTML = '<option value="">Semua Kategori</option>' + availableCategories.map(c => `<option value="${c}">${c}</option>`).join('');
-                    } else {
-                        elFilterKategori.classList.add('hidden'); // Sembunyikan jika tidak ada kolom kategori
+                        elFilterKategori.classList.remove('hidden');
                     }
 
                     if (availableBrands.length > 0) {
                         elFilterMerk.innerHTML = '<option value="">Semua Merk</option>' + availableBrands.map(m => `<option value="${m}">${m}</option>`).join('');
-                    } else {
-                        elFilterMerk.classList.add('hidden'); // Sembunyikan jika tidak ada kolom merk
+                        elFilterMerk.classList.remove('hidden');
                     }
                 }
                 

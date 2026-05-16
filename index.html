@@ -16,13 +16,6 @@
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-        
-        .line-clamp-2 {
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
 
         /* Active click effect for mobile */
         .active-tap:active {
@@ -156,8 +149,8 @@
                     </div>
                 </div>
 
-                <!-- Product Grid -->
-                <div id="product-list" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 lg:gap-5">
+                <!-- Product Grid - Diubah jadi baris/list -->
+                <div id="product-list" class="flex flex-col gap-4">
                     <!-- Produk akan dirender di sini via JS -->
                 </div>
 
@@ -188,27 +181,20 @@
             </div>
         </div>
 
-        <!-- Overlay Mobile Cart -->
-        <div id="cart-overlay" class="fixed inset-0 bg-gray-900/60 z-[70] opacity-0 pointer-events-none transition-opacity duration-300 lg:hidden" onclick="closeMobileCart()"></div>
-
-        <!-- Kolom Kanan: Keranjang (Slide Up di Mobile, Sticky di Desktop) -->
-        <div id="cart-section" class="fixed bottom-0 left-0 right-0 z-[80] translate-y-full transition-transform duration-300 ease-in-out lg:static lg:translate-y-0 lg:z-auto lg:col-span-5 xl:col-span-4">
-            <div class="bg-white rounded-t-3xl shadow-[0_-10px_40px_rgba(0,0,0,0.1)] border border-gray-100 lg:rounded-2xl lg:shadow-sm lg:sticky lg:top-20 flex flex-col max-h-[85vh] lg:max-h-[calc(100vh-6.5rem)] w-full">
+        <!-- Kolom Kanan: Keranjang (Pop-up di Mobile, Sticky di Desktop) -->
+        <div id="cart-modal-overlay" class="fixed inset-0 z-[80] bg-gray-900/60 p-4 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300 lg:static lg:bg-transparent lg:p-0 lg:opacity-100 lg:pointer-events-auto lg:col-span-5 xl:col-span-4 lg:block" onclick="if(event.target === this) closeMobileCart()">
+            
+            <div id="cart-section" class="bg-white rounded-3xl shadow-2xl w-full max-w-md max-h-[92vh] flex flex-col transform scale-95 transition-transform duration-300 lg:rounded-2xl lg:shadow-sm lg:sticky lg:top-20 lg:max-w-none lg:max-h-[calc(100vh-6.5rem)] lg:scale-100 lg:transform-none">
                 
-                <!-- Mobile Swipe Handle -->
-                <div class="lg:hidden flex justify-center pt-3 pb-2 cursor-pointer" onclick="closeMobileCart()">
-                    <div class="w-12 h-1.5 bg-gray-300 rounded-full"></div>
-                </div>
-
-                <div class="p-4 lg:p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50/50 lg:rounded-t-2xl">
+                <div class="p-4 lg:p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50/50 rounded-t-3xl lg:rounded-t-2xl">
                     <h2 class="text-lg font-bold flex items-center gap-2 text-gray-800">
                         <div class="bg-yellow-100 text-yellow-600 p-1.5 rounded-lg"><i data-lucide="shopping-cart" class="w-5 h-5"></i></div>
                         Rincian Pesanan
                     </h2>
                     <div class="flex items-center gap-3">
                         <span id="cart-total-badge" class="bg-yellow-400 text-yellow-900 text-xs font-bold px-2 py-1 rounded-md hidden">0 Barang</span>
-                        <button class="lg:hidden text-gray-400 hover:text-gray-600 p-1 bg-white rounded-full border border-gray-200 shadow-sm" onclick="closeMobileCart()">
-                            <i data-lucide="x" class="w-4 h-4"></i>
+                        <button class="lg:hidden text-gray-400 hover:text-gray-600 p-1 bg-white rounded-full border border-gray-200 shadow-sm active-tap" onclick="closeMobileCart()">
+                            <i data-lucide="x" class="w-5 h-5"></i>
                         </button>
                     </div>
                 </div>
@@ -217,7 +203,7 @@
                     <!-- Item keranjang akan dirender di sini via JS -->
                 </div>
 
-                <div class="p-5 border-t border-gray-100 bg-gray-50/80 rounded-b-2xl">
+                <div class="p-5 border-t border-gray-100 bg-gray-50/80 rounded-b-3xl lg:rounded-b-2xl">
                     <div class="flex flex-col gap-1 mb-4">
                         <span class="text-sm font-semibold text-gray-500">Total Pembayaran</span>
                         <span id="cart-total-price" class="text-2xl font-black text-gray-800 tracking-tight">Rp 0</span>
@@ -479,21 +465,23 @@
 
         // UI Interactions
         window.openMobileCart = () => {
-            const overlay = document.getElementById('cart-overlay');
+            const overlay = document.getElementById('cart-modal-overlay');
             const section = document.getElementById('cart-section');
             if(overlay && section) {
                 overlay.classList.remove('opacity-0', 'pointer-events-none');
-                section.classList.remove('translate-y-full');
+                section.classList.remove('scale-95');
+                section.classList.add('scale-100');
                 document.body.style.overflow = 'hidden';
             }
         };
 
         window.closeMobileCart = () => {
-            const overlay = document.getElementById('cart-overlay');
+            const overlay = document.getElementById('cart-modal-overlay');
             const section = document.getElementById('cart-section');
             if(overlay && section) {
                 overlay.classList.add('opacity-0', 'pointer-events-none');
-                section.classList.add('translate-y-full');
+                section.classList.remove('scale-100');
+                section.classList.add('scale-95');
                 document.body.style.overflow = '';
             }
         };
@@ -729,19 +717,19 @@
                 if(product.merk && product.merk !== '-') badgesHtml += `<span class="text-[10px] font-semibold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-md border border-gray-200 ml-2">${product.merk}</span>`;
 
                 return `
-                <div class="border border-gray-100 bg-white p-5 rounded-2xl flex flex-col justify-between hover:shadow-lg transition-all duration-300 group">
-                    <div>
+                <div class="border border-gray-100 bg-white p-4 sm:p-5 rounded-2xl flex flex-col sm:flex-row justify-between gap-4 sm:gap-6 hover:shadow-lg transition-all duration-300 group">
+                    <div class="flex-1 flex flex-col justify-start">
                         <div class="flex items-center mb-2 flex-wrap gap-1">
                             ${badgesHtml}
                         </div>
-                        <h3 class="font-bold text-gray-800 leading-snug mb-3 line-clamp-2 group-hover:text-purple-600 transition-colors" title="${product.nama.replace(/"/g, '&quot;')}">${product.nama}</h3>
-                        <div class="flex gap-2.5 mb-4 text-[11px] font-semibold">
+                        <h3 class="font-bold text-gray-800 leading-snug mb-3 group-hover:text-purple-600 transition-colors" title="${product.nama.replace(/"/g, '&quot;')}">${product.nama}</h3>
+                        <div class="flex gap-2.5 mt-auto text-[11px] font-semibold">
                             <span class="flex items-center gap-1 text-gray-600 bg-gray-100 px-2 py-1 rounded-md border border-gray-200"><i data-lucide="store" class="w-3.5 h-3.5"></i> Toko: ${product.stok.toko}</span>
                             <span class="flex items-center gap-1 text-gray-600 bg-gray-100 px-2 py-1 rounded-md border border-gray-200"><i data-lucide="warehouse" class="w-3.5 h-3.5"></i> Gudang: ${product.stok.gudang}</span>
                         </div>
                     </div>
                     
-                    <div class="mt-auto pt-3 border-t border-gray-100">
+                    <div class="w-full sm:w-72 flex flex-col justify-end sm:border-l sm:border-gray-100 sm:pl-5">
                         <select id="price-tier-${product.id}" onchange="updateCatalogPriceTier('${product.id}', this.value)" class="w-full text-xs font-bold text-gray-700 bg-gray-50 border border-gray-200 rounded-lg p-2.5 mb-2 appearance-none cursor-pointer outline-none focus:ring-2 focus:ring-yellow-400 transition-colors bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23b45309%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E')] bg-[length:10px_10px] bg-no-repeat bg-[position:right_10px_center]">
                             <option value="eceran" ${activeTier === 'eceran' ? 'selected' : ''}>Eceran: ${formatRupiah(product.harga.eceran)} /${product.unit}</option>
                             <option value="grosir" ${activeTier === 'grosir' ? 'selected' : ''}>Grosir: ${formatRupiah(product.harga.grosir)} /${product.unit}</option>
@@ -750,13 +738,13 @@
                         </select>
                         
                         ${activeTier === 'custom' ? `
-                        <div class="flex items-center bg-white border border-gray-300 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-yellow-400 shadow-sm mb-3">
+                        <div class="flex items-center bg-white border border-gray-300 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-yellow-400 shadow-sm mb-2">
                             <span class="bg-gray-100 text-gray-500 px-3 py-2 text-xs font-bold border-r border-gray-300">Rp</span>
                             <input type="number" id="catalog-custom-price-${product.id}" onchange="updateCatalogCustomPrice('${product.id}', this.value)" value="${activeCustomPrice || 0}" class="w-full px-3 py-2 text-sm font-bold text-gray-800 outline-none" placeholder="0" />
                         </div>
                         ` : ''}
 
-                        <div id="action-container-${product.id}" class="transition-transform duration-150 mt-1">
+                        <div id="action-container-${product.id}" class="transition-transform duration-150">
                             ${isInCart ? `
                                 <div class="flex items-center justify-between bg-emerald-50 border border-emerald-200 rounded-xl p-1 shadow-sm mt-1">
                                     <button onclick="updateCartQty('${product.id}', -1)" class="active-tap w-10 h-10 flex items-center justify-center bg-white rounded-lg ${cartItem.qty === 1 ? 'text-red-500 hover:bg-red-50 border-red-100' : 'text-emerald-600 hover:bg-emerald-100 border-emerald-100'} shadow-sm border">
@@ -1032,7 +1020,7 @@
 
         window.updateGlobalPriceTier = (value) => {
             globalPriceTier = value;
-            catalogTiers = {}; // Reset local tier overrides on products that aren't in cart yet
+            catalogTiers = {}; // Reset local tier overrides on products that arent in cart yet
             renderProducts();
         };
 

@@ -161,8 +161,8 @@
         </div>
     </div>
 
-    <!-- Header -->
-    <header class="bg-white/90 backdrop-blur-md shadow-sm sticky top-0 z-50 border-b border-gray-200">
+    <!-- Header (Diperbarui Z-Index nya agar menu dropdown tema tidak terpotong) -->
+    <header class="bg-white/90 backdrop-blur-md shadow-sm sticky top-0 z-[100] border-b border-gray-200">
         <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
             <div class="flex items-center gap-2.5">
                 <div class="bg-primary-400 p-2 rounded-xl">
@@ -177,7 +177,7 @@
                     <button onclick="toggleThemeMenu()" class="flex items-center gap-1 font-bold bg-white text-gray-700 px-3 py-1.5 rounded-full shadow-sm border border-gray-200 hover:bg-gray-50 transition-colors active-tap">
                         <i data-lucide="palette" class="w-4 h-4 text-primary-500"></i> <span class="hidden sm:inline text-sm">Tema</span>
                     </button>
-                    <div id="theme-menu" class="absolute right-0 mt-2 w-48 bg-white border border-gray-100 rounded-2xl shadow-xl p-3 hidden flex-col gap-1 z-[60]">
+                    <div id="theme-menu" class="absolute right-0 mt-2 w-48 bg-white border border-gray-100 rounded-2xl shadow-xl p-3 hidden flex-col gap-1 z-[110]">
                         <h3 class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2 px-1">Pilih Tema Warna</h3>
                         
                         <button onclick="setTheme('yellow')" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-50 rounded-xl text-sm font-semibold text-gray-700 transition-colors">
@@ -206,7 +206,7 @@
                 </div>
 
                 <button onclick="openHistoryModal()" class="flex items-center gap-1 font-bold bg-white text-gray-700 px-3 py-1.5 rounded-full shadow-sm border border-gray-200 hover:bg-gray-50 transition-colors active-tap">
-                    <i data-lucide="history" class="w-4 h-4 text-blue-500"></i> <span class="hidden sm:inline text-sm">Riwayat</span>
+                    <i data-lucide="history" class="w-4 h-4 text-primary-500"></i> <span class="hidden sm:inline text-sm">Riwayat</span>
                 </button>
                 <div class="flex items-center gap-1.5 font-bold bg-primary-100 px-3 sm:px-4 py-1.5 rounded-full text-primary-800">
                     <span id="cart-badge-count">0</span> <span class="text-sm font-medium">Items</span>
@@ -223,22 +223,22 @@
             <!-- Customer Info Card -->
             <div class="bg-white p-5 lg:p-6 rounded-2xl shadow-sm border border-gray-100">
                 <h2 class="text-lg font-bold mb-5 flex items-center gap-2 text-gray-800">
-                    <div class="bg-blue-100 text-blue-600 p-1.5 rounded-lg"><i data-lucide="user" class="w-5 h-5"></i></div>
+                    <div class="bg-primary-100 text-primary-600 p-1.5 rounded-lg"><i data-lucide="user" class="w-5 h-5"></i></div>
                     Data Pelanggan
                 </h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div>
                         <label class="block text-sm font-semibold text-gray-600 mb-1.5">Nama Customer <span class="text-red-500">*</span></label>
                         <div class="relative group">
-                            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-400 group-focus-within:text-blue-500 transition-colors"><i data-lucide="user" class="w-4.5 h-4.5"></i></span>
-                            <input type="text" id="input-customer-name" class="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-sm font-medium" placeholder="Nama Lengkap Pemesan">
+                            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-400 group-focus-within:text-primary-500 transition-colors"><i data-lucide="user" class="w-4.5 h-4.5"></i></span>
+                            <input type="text" id="input-customer-name" class="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all text-sm font-medium" placeholder="Nama Lengkap Pemesan">
                         </div>
                     </div>
                     <div>
                         <label class="block text-sm font-semibold text-gray-600 mb-1.5">No. WhatsApp <span class="text-gray-400 font-normal">(Opsional)</span></label>
                         <div class="relative group">
-                            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-400 group-focus-within:text-green-500 transition-colors"><i data-lucide="phone" class="w-4.5 h-4.5"></i></span>
-                            <input type="tel" id="input-customer-phone" class="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500/20 focus:border-green-500 outline-none transition-all text-sm font-medium" placeholder="Contoh: 08123456789">
+                            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-400 group-focus-within:text-primary-500 transition-colors"><i data-lucide="phone" class="w-4.5 h-4.5"></i></span>
+                            <input type="tel" id="input-customer-phone" class="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all text-sm font-medium" placeholder="Contoh: 08123456789">
                         </div>
                     </div>
                 </div>
@@ -248,7 +248,7 @@
             <div class="bg-white p-5 lg:p-6 rounded-2xl shadow-sm border border-gray-100 flex-1">
                 <div class="flex flex-col mb-6 gap-4">
                     <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
-                        <div class="bg-purple-100 text-purple-600 p-1.5 rounded-lg"><i data-lucide="package" class="w-5 h-5"></i></div>
+                        <div class="bg-primary-100 text-primary-600 p-1.5 rounded-lg"><i data-lucide="package" class="w-5 h-5"></i></div>
                         Daftar Produk
                     </h2>
                     
@@ -256,9 +256,9 @@
                         <div class="flex items-center gap-2 flex-1">
                             <div class="relative flex-1">
                                 <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-400"><i data-lucide="search" class="w-4 h-4"></i></span>
-                                <input type="text" id="input-search" class="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 outline-none bg-gray-50/50 text-sm transition-all" placeholder="Ketik nama produk / SKU...">
+                                <input type="text" id="input-search" class="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none bg-gray-50/50 text-sm transition-all" placeholder="Ketik nama produk / SKU...">
                             </div>
-                            <button onclick="openScannerModal()" class="active-tap p-2.5 bg-purple-100 text-purple-600 hover:bg-purple-200 rounded-xl transition-colors flex-shrink-0 shadow-sm border border-purple-200 h-full aspect-square flex items-center justify-center" title="Scan Barcode">
+                            <button onclick="openScannerModal()" class="active-tap p-2.5 bg-primary-100 text-primary-600 hover:bg-primary-200 rounded-xl transition-colors flex-shrink-0 shadow-sm border border-primary-200 h-full aspect-square flex items-center justify-center" title="Scan Barcode">
                                 <i data-lucide="scan-line" class="w-5 h-5"></i>
                             </button>
                         </div>
@@ -272,11 +272,11 @@
                             </select>
 
                             <div class="relative w-full sm:w-36 hidden flex-shrink-0" id="container-filter-kategori">
-                                <input type="text" id="filter-kategori" list="list-kategori" class="w-full text-sm border border-gray-200 rounded-xl py-2.5 px-3 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-400 transition-colors placeholder-gray-400 outline-none" placeholder="Semua Kategori">
+                                <input type="text" id="filter-kategori" list="list-kategori" class="w-full text-sm border border-gray-200 rounded-xl py-2.5 px-3 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-400 transition-colors placeholder-gray-400 outline-none" placeholder="Semua Kategori">
                                 <datalist id="list-kategori"></datalist>
                             </div>
                             <div class="relative w-full sm:w-36 hidden flex-shrink-0" id="container-filter-merk">
-                                <input type="text" id="filter-merk" list="list-merk" class="w-full text-sm border border-gray-200 rounded-xl py-2.5 px-3 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-400 transition-colors placeholder-gray-400 outline-none" placeholder="Semua Merk">
+                                <input type="text" id="filter-merk" list="list-merk" class="w-full text-sm border border-gray-200 rounded-xl py-2.5 px-3 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-400 transition-colors placeholder-gray-400 outline-none" placeholder="Semua Merk">
                                 <datalist id="list-merk"></datalist>
                             </div>
                         </div>
@@ -292,7 +292,7 @@
                 <div id="pagination-controls" class="mt-8 border-t border-gray-100 pt-5 flex flex-col sm:flex-row justify-between items-center gap-4 hidden">
                     <div class="flex items-center gap-3">
                         <span class="text-sm font-medium text-gray-500">Tampilkan:</span>
-                        <select id="select-items-per-page" class="border border-gray-200 rounded-lg py-2 px-3 text-sm focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 outline-none bg-white font-medium shadow-sm">
+                        <select id="select-items-per-page" class="border border-gray-200 rounded-lg py-2 px-3 text-sm focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none bg-white font-medium shadow-sm">
                             <option value="20">20 / Hal</option>
                             <option value="50">50 / Hal</option>
                             <option value="100">100 / Hal</option>
@@ -346,13 +346,13 @@
                     <div class="mb-5">
                         <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Catatan Umum Pesanan <span class="font-normal normal-case">(Opsional)</span></label>
                         <div class="relative group">
-                            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-400 group-focus-within:text-orange-500 transition-colors"><i data-lucide="sticky-note" class="w-4 h-4"></i></span>
-                            <input type="text" id="input-customer-note" class="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 outline-none transition-all text-sm font-medium bg-white" placeholder="Contoh: Kirim sebelum jam 4 sore">
+                            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-400 group-focus-within:text-primary-500 transition-colors"><i data-lucide="sticky-note" class="w-4 h-4"></i></span>
+                            <input type="text" id="input-customer-note" class="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all text-sm font-medium bg-white" placeholder="Contoh: Kirim sebelum jam 4 sore">
                         </div>
                     </div>
 
                     <div class="flex gap-3">
-                        <button id="btn-save-draft" onclick="saveToHistory(true)" class="active-tap w-1/3 py-3.5 rounded-xl font-bold text-sm flex justify-center items-center gap-1.5 transition-all bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200" disabled>
+                        <button id="btn-save-draft" onclick="saveToHistory(true)" class="active-tap w-1/3 py-3.5 rounded-xl font-bold text-sm flex justify-center items-center gap-1.5 transition-all bg-primary-50 hover:bg-primary-100 text-primary-700 cursor-not-allowed border border-primary-200" disabled>
                             <i data-lucide="save" class="w-4 h-4"></i> <span class="hidden sm:inline">Draft</span>
                         </button>
                         <button id="btn-checkout" class="active-tap w-2/3 py-3.5 rounded-xl font-bold text-lg flex justify-center items-center gap-2 transition-all bg-gray-200 text-gray-400 cursor-not-allowed" disabled>
@@ -398,17 +398,17 @@
             <div class="p-6 overflow-y-auto flex-1 custom-scrollbar">
                 <div class="mb-5 bg-blue-50 border border-blue-100 p-4 rounded-xl text-sm">
                     <div class="flex items-center gap-2 mb-1.5">
-                        <i data-lucide="user" class="w-4 h-4 text-blue-500"></i>
+                        <i data-lucide="user" class="w-4 h-4 text-primary-500"></i>
                         <span class="text-gray-500 font-medium">Pemesan:</span>
                         <strong id="modal-customer-name" class="text-gray-800 ml-auto"></strong>
                     </div>
                     <div id="modal-customer-phone-container" class="flex items-center gap-2 mb-1.5 hidden">
-                        <i data-lucide="phone" class="w-4 h-4 text-blue-500"></i>
+                        <i data-lucide="phone" class="w-4 h-4 text-primary-500"></i>
                         <span class="text-gray-500 font-medium">No. HP:</span>
                         <strong id="modal-customer-phone" class="text-gray-800 ml-auto"></strong>
                     </div>
                     <div id="modal-customer-note-container" class="flex items-start gap-2 hidden">
-                        <i data-lucide="sticky-note" class="w-4 h-4 text-blue-500 mt-0.5"></i>
+                        <i data-lucide="sticky-note" class="w-4 h-4 text-primary-500 mt-0.5"></i>
                         <span class="text-gray-500 font-medium whitespace-nowrap">Catatan:</span>
                         <strong id="modal-customer-note" class="text-gray-800 ml-auto text-right"></strong>
                     </div>
@@ -427,11 +427,12 @@
 
             <div class="p-5 bg-white flex flex-col gap-3 border-t border-gray-100">
                 <div class="grid grid-cols-2 gap-3">
-                    <button onclick="handleDownloadExcel()" class="active-tap py-3 bg-blue-50 text-blue-600 border border-blue-200 rounded-xl font-bold hover:bg-blue-100 transition-colors flex flex-col items-center justify-center gap-1">
+                    <button onclick="handleDownloadExcel()" class="active-tap py-3 bg-primary-50 text-primary-600 border border-primary-200 rounded-xl font-bold hover:bg-primary-100 transition-colors flex flex-col items-center justify-center gap-1">
                         <i data-lucide="file-spreadsheet" class="w-5 h-5"></i>
                         <span class="text-xs">Download Excel</span>
                     </button>
-                    <button id="btn-copy-save" onclick="handleCopyAndSave()" class="active-tap py-3 bg-green-500 text-white rounded-xl font-bold hover:bg-green-600 shadow-md shadow-green-500/20 transition-all flex flex-col items-center justify-center gap-1">
+                    <!-- WhatsApp Salin Button keep as Green (#25D366 context) -->
+                    <button id="btn-copy-save" onclick="handleCopyAndSave()" class="active-tap py-3 bg-[#25D366] text-white rounded-xl font-bold hover:bg-[#1DA851] shadow-md shadow-[#25D366]/20 transition-all flex flex-col items-center justify-center gap-1">
                         <i data-lucide="copy" class="w-5 h-5"></i>
                         <span class="text-xs">Salin & Save</span>
                     </button>
@@ -448,7 +449,7 @@
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[92vh] transform scale-95 transition-transform duration-300" id="history-modal-content">
             <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
                 <h2 class="text-lg font-bold flex items-center gap-2 text-gray-800">
-                    <div class="bg-blue-100 text-blue-600 p-1.5 rounded-lg"><i data-lucide="history" class="w-5 h-5"></i></div>
+                    <div class="bg-primary-100 text-primary-600 p-1.5 rounded-lg"><i data-lucide="history" class="w-5 h-5"></i></div>
                     Riwayat & Draft
                 </h2>
                 <button onclick="closeHistoryModal()" class="text-gray-400 hover:text-gray-600 hover:bg-gray-100 p-2 rounded-full transition-colors active-tap">
@@ -467,7 +468,7 @@
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col transform scale-95 transition-transform duration-300" id="scanner-modal-content">
             <div class="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
                 <h2 class="text-lg font-bold flex items-center gap-2 text-gray-800">
-                    <div class="bg-purple-100 text-purple-600 p-1.5 rounded-lg"><i data-lucide="scan-line" class="w-5 h-5"></i></div>
+                    <div class="bg-primary-100 text-primary-600 p-1.5 rounded-lg"><i data-lucide="scan-line" class="w-5 h-5"></i></div>
                     Scan Barcode SKU
                 </h2>
                 <button onclick="closeScannerModal()" class="text-gray-400 hover:text-gray-600 hover:bg-gray-100 p-2 rounded-full transition-colors active-tap">
@@ -744,15 +745,15 @@
                     const isQtyOne = cartItem.qty === 1;
                     // Ubah tombol jadi pengatur Qty dengan ikon Trash jika qty 1
                     container.innerHTML = `
-                        <div class="flex items-center justify-between bg-emerald-50 border border-emerald-200 rounded-xl p-1 shadow-sm mt-1">
-                            <button onclick="updateCartQty('${productId}', -1)" class="active-tap w-10 h-10 flex items-center justify-center bg-white rounded-lg ${isQtyOne ? 'text-red-500 hover:bg-red-50 border-red-100' : 'text-emerald-600 hover:bg-emerald-100 border-emerald-100'} shadow-sm border">
+                        <div class="flex items-center justify-between bg-primary-50 border border-primary-200 rounded-xl p-1 shadow-sm mt-1">
+                            <button onclick="updateCartQty('${productId}', -1)" class="active-tap w-10 h-10 flex items-center justify-center bg-white rounded-lg ${isQtyOne ? 'text-red-500 hover:bg-red-50 border-red-100' : 'text-primary-600 hover:bg-primary-100 border-primary-100'} shadow-sm border">
                                 <i data-lucide="${isQtyOne ? 'trash-2' : 'minus'}" class="w-4 h-4"></i>
                             </button>
                             <div class="flex flex-col items-center justify-center">
-                                <span class="text-[9px] font-bold text-emerald-600 uppercase tracking-wider mb-[-2px]">Qty</span>
-                                <input type="number" onchange="updateCartQtyManual('${productId}', this.value)" value="${cartItem.qty}" class="text-sm font-black w-12 text-center bg-transparent outline-none text-emerald-800 focus:bg-white focus:ring-2 focus:ring-emerald-400 rounded-md transition-all" min="0" />
+                                <span class="text-[9px] font-bold text-primary-600 uppercase tracking-wider mb-[-2px]">Qty</span>
+                                <input type="number" onchange="updateCartQtyManual('${productId}', this.value)" value="${cartItem.qty}" class="text-sm font-black w-12 text-center bg-transparent outline-none text-primary-800 focus:bg-white focus:ring-2 focus:ring-primary-400 rounded-md transition-all" min="0" />
                             </div>
-                            <button onclick="updateCartQty('${productId}', 1)" class="active-tap w-10 h-10 flex items-center justify-center bg-white rounded-lg text-emerald-600 hover:bg-emerald-100 shadow-sm border border-emerald-100">
+                            <button onclick="updateCartQty('${productId}', 1)" class="active-tap w-10 h-10 flex items-center justify-center bg-white rounded-lg text-primary-600 hover:bg-primary-100 shadow-sm border border-primary-100">
                                 <i data-lucide="plus" class="w-4 h-4"></i>
                             </button>
                         </div>
@@ -954,7 +955,7 @@
                 const activeTier = isInCart ? cartItem.priceTier : (catalogTiers[product.id] || globalPriceTier);
                 const activeCustomPrice = isInCart ? cartItem.customPrice : (catalogCustomPrices[product.id] || 0);
 
-                let badgesHtml = `<span class="text-[11px] font-bold text-purple-500 bg-purple-50 px-2 py-0.5 rounded-md tracking-wider">${product.sku}</span>`;
+                let badgesHtml = `<span class="text-[11px] font-bold text-primary-500 bg-primary-50 px-2 py-0.5 rounded-md tracking-wider">${product.sku}</span>`;
                 if(product.merk && product.merk !== '-') badgesHtml += `<span class="text-[10px] font-semibold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-md border border-gray-200 ml-2">${product.merk}</span>`;
 
                 return `
@@ -963,7 +964,7 @@
                         <div class="flex items-center mb-2 flex-wrap gap-1">
                             ${badgesHtml}
                         </div>
-                        <h3 class="font-bold text-gray-800 leading-snug mb-3 group-hover:text-purple-600 transition-colors" title="${product.nama.replace(/"/g, '&quot;')}">${product.nama}</h3>
+                        <h3 class="font-bold text-gray-800 leading-snug mb-3 group-hover:text-primary-600 transition-colors" title="${product.nama.replace(/"/g, '&quot;')}">${product.nama}</h3>
                         <div class="flex gap-2.5 mt-auto text-[11px] font-semibold">
                             <span class="flex items-center gap-1 text-gray-600 bg-gray-100 px-2 py-1 rounded-md border border-gray-200"><i data-lucide="store" class="w-3.5 h-3.5"></i> Toko: ${product.stok.toko}</span>
                             <span class="flex items-center gap-1 text-gray-600 bg-gray-100 px-2 py-1 rounded-md border border-gray-200"><i data-lucide="warehouse" class="w-3.5 h-3.5"></i> Gudang: ${product.stok.gudang}</span>
@@ -971,7 +972,7 @@
                     </div>
                     
                     <div class="w-full sm:w-72 flex flex-col justify-end sm:border-l sm:border-gray-100 sm:pl-5">
-                        <select id="price-tier-${product.id}" onchange="updateCatalogPriceTier('${product.id}', this.value)" class="w-full text-xs font-bold text-gray-700 bg-gray-50 border border-gray-200 rounded-lg p-2.5 mb-2 appearance-none cursor-pointer outline-none focus:ring-2 focus:ring-primary-400 transition-colors bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%236b7280%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E')] bg-[length:10px_10px] bg-no-repeat bg-[position:right_10px_center]">
+                        <select id="price-tier-${product.id}" onchange="updateCatalogPriceTier('${product.id}', this.value)" class="w-full text-xs font-bold text-gray-700 bg-gray-50 border border-gray-200 rounded-lg p-2.5 mb-2 appearance-none cursor-pointer outline-none focus:ring-2 focus:ring-primary-400 transition-colors bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%239ca3af%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E')] bg-[length:10px_10px] bg-no-repeat bg-[position:right_10px_center]">
                             <option value="eceran" ${activeTier === 'eceran' ? 'selected' : ''}>Eceran: ${formatRupiah(product.harga.eceran)} /${product.unit}</option>
                             <option value="grosir" ${activeTier === 'grosir' ? 'selected' : ''}>Grosir: ${formatRupiah(product.harga.grosir)} /${product.unit}</option>
                             <option value="partai" ${activeTier === 'partai' ? 'selected' : ''}>Partai: ${formatRupiah(product.harga.partai)} /${product.unit}</option>
@@ -987,15 +988,15 @@
 
                         <div id="action-container-${product.id}" class="transition-transform duration-150">
                             ${isInCart ? `
-                                <div class="flex items-center justify-between bg-emerald-50 border border-emerald-200 rounded-xl p-1 shadow-sm mt-1">
-                                    <button onclick="updateCartQty('${product.id}', -1)" class="active-tap w-10 h-10 flex items-center justify-center bg-white rounded-lg ${cartItem.qty === 1 ? 'text-red-500 hover:bg-red-50 border-red-100' : 'text-emerald-600 hover:bg-emerald-100 border-emerald-100'} shadow-sm border">
+                                <div class="flex items-center justify-between bg-primary-50 border border-primary-200 rounded-xl p-1 shadow-sm mt-1">
+                                    <button onclick="updateCartQty('${product.id}', -1)" class="active-tap w-10 h-10 flex items-center justify-center bg-white rounded-lg ${cartItem.qty === 1 ? 'text-red-500 hover:bg-red-50 border-red-100' : 'text-primary-600 hover:bg-primary-100 border-primary-100'} shadow-sm border">
                                         <i data-lucide="${cartItem.qty === 1 ? 'trash-2' : 'minus'}" class="w-4 h-4"></i>
                                     </button>
                                     <div class="flex flex-col items-center justify-center">
-                                        <span class="text-[9px] font-bold text-emerald-600 uppercase tracking-wider mb-[-2px]">Qty</span>
-                                        <input type="number" onchange="updateCartQtyManual('${product.id}', this.value)" value="${cartItem.qty}" class="text-sm font-black w-12 text-center bg-transparent outline-none text-emerald-800 focus:bg-white focus:ring-2 focus:ring-emerald-400 rounded-md transition-all" min="0" />
+                                        <span class="text-[9px] font-bold text-primary-600 uppercase tracking-wider mb-[-2px]">Qty</span>
+                                        <input type="number" onchange="updateCartQtyManual('${product.id}', this.value)" value="${cartItem.qty}" class="text-sm font-black w-12 text-center bg-transparent outline-none text-primary-800 focus:bg-white focus:ring-2 focus:ring-primary-400 rounded-md transition-all" min="0" />
                                     </div>
-                                    <button onclick="updateCartQty('${product.id}', 1)" class="active-tap w-10 h-10 flex items-center justify-center bg-white rounded-lg text-emerald-600 hover:bg-emerald-100 shadow-sm border border-emerald-100">
+                                    <button onclick="updateCartQty('${product.id}', 1)" class="active-tap w-10 h-10 flex items-center justify-center bg-white rounded-lg text-primary-600 hover:bg-primary-100 shadow-sm border border-primary-100">
                                         <i data-lucide="plus" class="w-4 h-4"></i>
                                     </button>
                                 </div>
@@ -1075,7 +1076,7 @@
                     
                     <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 mt-2">
                         <div class="flex-1 w-full space-y-2">
-                            <select onchange="updateCartPriceTier('${item.product.id}', this.value)" class="w-full text-xs font-semibold border border-gray-200 rounded-lg py-2 px-2.5 bg-gray-50 text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:bg-white transition-colors cursor-pointer appearance-none bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%236b7280%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E')] bg-[length:10px_10px] bg-no-repeat bg-[position:right_10px_center]">
+                            <select onchange="updateCartPriceTier('${item.product.id}', this.value)" class="w-full text-xs font-semibold border border-gray-200 rounded-lg py-2 px-2.5 bg-gray-50 text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:bg-white transition-colors cursor-pointer appearance-none bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%239ca3af%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E')] bg-[length:10px_10px] bg-no-repeat bg-[position:right_10px_center]">
                                 <option value="eceran" ${item.priceTier === 'eceran' ? 'selected' : ''}>Harga Eceran (${formatRupiah(item.product.harga.eceran)})</option>
                                 <option value="grosir" ${item.priceTier === 'grosir' ? 'selected' : ''}>Harga Grosir (${formatRupiah(item.product.harga.grosir)})</option>
                                 <option value="partai" ${item.priceTier === 'partai' ? 'selected' : ''}>Harga Partai (${formatRupiah(item.product.harga.partai)})</option>
@@ -1110,8 +1111,8 @@
                         </div>
                     </div>
 
-                    <div class="mt-3 bg-orange-50/50 border border-orange-100 rounded-lg p-2 flex items-center gap-2 focus-within:ring-2 focus-within:ring-orange-400 focus-within:border-orange-400 transition-all">
-                        <i data-lucide="pen-line" class="w-4 h-4 text-orange-400"></i>
+                    <div class="mt-3 bg-primary-50/50 border border-primary-100 rounded-lg p-2 flex items-center gap-2 focus-within:ring-2 focus-within:ring-primary-400 focus-within:border-primary-400 transition-all">
+                        <i data-lucide="pen-line" class="w-4 h-4 text-primary-500"></i>
                         <input type="text" onchange="updateCartItemNote('${item.product.id}', this.value)" value="${item.note || ''}" class="w-full bg-transparent text-xs text-gray-700 outline-none placeholder-gray-400" placeholder="Catatan khusus item ini (opsional)..." />
                     </div>
                 </div>`;
@@ -1122,7 +1123,7 @@
             
             const btnDraft = document.getElementById('btn-save-draft');
             btnDraft.disabled = false;
-            btnDraft.className = "active-tap w-1/3 py-3.5 rounded-xl font-bold text-sm flex justify-center items-center gap-1.5 transition-all bg-blue-100 hover:bg-blue-200 text-blue-700 shadow-sm cursor-pointer border border-blue-200";
+            btnDraft.className = "active-tap w-1/3 py-3.5 rounded-xl font-bold text-sm flex justify-center items-center gap-1.5 transition-all bg-primary-50 hover:bg-primary-100 text-primary-700 shadow-sm cursor-pointer border border-primary-200";
 
             lucide.createIcons();
             syncProductButtons();
@@ -1378,6 +1379,58 @@
             }, 300); // Wait for transition
         };
 
+        // History & Save Logics
+        window.saveToHistory = (isDraft = false) => {
+            if (cart.length === 0) return;
+            const custName = document.getElementById('input-customer-name').value.trim() || 'Tanpa Nama';
+            const custPhone = document.getElementById('input-customer-phone').value.trim();
+            const custNote = document.getElementById('input-customer-note').value.trim();
+            const cartTotal = cart.reduce((sum, item) => sum + (getItemPrice(item) * item.qty), 0);
+            
+            const historyData = getHistory();
+            const newItem = {
+                id: Date.now().toString(),
+                date: new Date().toISOString(),
+                isDraft: isDraft,
+                customerName: custName,
+                customerPhone: custPhone,
+                customerNote: custNote,
+                cart: JSON.parse(JSON.stringify(cart)), 
+                total: cartTotal
+            };
+            
+            historyData.unshift(newItem);
+            setHistory(historyData);
+            
+            if (isDraft) {
+                showToast("Berhasil menyimpan keranjang sebagai Draft!", "success");
+            }
+        };
+
+        window.openHistoryModal = () => {
+            renderHistory();
+            const modal = document.getElementById('history-modal');
+            const content = document.getElementById('history-modal-content');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            void modal.offsetWidth; 
+            modal.classList.remove('opacity-0');
+            content.classList.remove('scale-95');
+            content.classList.add('scale-100');
+        };
+
+        window.closeHistoryModal = () => {
+            const modal = document.getElementById('history-modal');
+            const content = document.getElementById('history-modal-content');
+            modal.classList.add('opacity-0');
+            content.classList.remove('scale-100');
+            content.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }, 300);
+        };
+
         // Scanner Logics
         window.openScannerModal = () => {
             const modal = document.getElementById('scanner-modal');
@@ -1466,7 +1519,7 @@
                             <div class="flex items-center gap-2 mb-1">
                                 <span class="font-bold text-gray-800">${item.customerName}</span>
                                 ${item.isDraft 
-                                    ? `<span class="bg-blue-100 text-blue-700 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Draft</span>` 
+                                    ? `<span class="bg-primary-100 text-primary-700 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Draft</span>` 
                                     : `<span class="bg-green-100 text-green-700 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Selesai</span>`}
                             </div>
                             <p class="text-xs text-gray-500">${dateStr}</p>
@@ -1478,7 +1531,7 @@
                     </div>
                     ${item.customerNote ? `<p class="text-xs text-gray-600 italic mb-3 line-clamp-1">" ${item.customerNote} "</p>` : '<div class="mb-3"></div>'}
                     <div class="flex gap-2 border-t border-gray-100 pt-3">
-                        <button onclick="loadHistoryItem('${item.id}')" class="flex-1 py-2 bg-purple-50 text-purple-600 hover:bg-purple-100 font-bold text-xs rounded-lg flex justify-center items-center gap-1.5 transition-colors active-tap">
+                        <button onclick="loadHistoryItem('${item.id}')" class="flex-1 py-2 bg-primary-50 text-primary-600 hover:bg-primary-100 font-bold text-xs rounded-lg flex justify-center items-center gap-1.5 transition-colors active-tap">
                             <i data-lucide="upload" class="w-3.5 h-3.5"></i> Muat Data
                         </button>
                         <button onclick="deleteHistoryItem('${item.id}')" class="px-3 py-2 bg-red-50 text-red-500 hover:bg-red-100 rounded-lg transition-colors active-tap">
@@ -1579,12 +1632,12 @@
                 const btn = document.getElementById('btn-copy-save');
                 const originalHTML = btn.innerHTML;
                 btn.innerHTML = `<i data-lucide="check-circle" class="w-5 h-5"></i><span class="text-xs">Tersalin & Tersimpan</span>`;
-                btn.classList.replace('bg-green-500', 'bg-emerald-600');
+                btn.classList.replace('bg-[#25D366]', 'bg-[#1DA851]');
                 lucide.createIcons();
                 
                 setTimeout(() => {
                     btn.innerHTML = originalHTML;
-                    btn.classList.replace('bg-emerald-600', 'bg-green-500');
+                    btn.classList.replace('bg-[#1DA851]', 'bg-[#25D366]');
                     lucide.createIcons();
                     closeCheckoutModal();
                 }, 2000);

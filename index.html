@@ -133,7 +133,7 @@
     <div id="loading-overlay" class="fixed inset-0 bg-white/80 backdrop-blur-sm z-[9999] flex items-center justify-center">
         <div class="flex flex-col items-center gap-3">
             <div class="animate-spin rounded-full h-14 w-14 border-4 border-gray-200 border-t-primary-500"></div>
-            <p class="text-primary-700 font-semibold animate-pulse">Memuat Produk...</p>
+            <p class="text-primary-700 font-semibold animate-pulse">Memuat Produk Utama...</p>
         </div>
     </div>
 
@@ -770,12 +770,12 @@
 
         // Fungsi untuk mengambil foto produk dari folder Google Drive berdasarkan ID File yang dipetakan dari CSV
         const getProductImageUrl = (product) => {
-            if (product && product.imageId && product.imageId.trim() !== '' && product.imageId !== '-') {
-                // Endpoint standar URL Google Drive untuk gambar
-                return `https://drive.google.com/uc?export=view&id=${product.imageId.trim()}`;
+            if (product && product.imageId && product.imageId.trim() !== '' && product.imageId.trim() !== '-') {
+                // Menggunakan endpoint lh3.googleusercontent.com yang paling stabil untuk gambar Google Drive
+                return `https://lh3.googleusercontent.com/d/${product.imageId.trim()}`;
             }
             // Jika ID Gambar kosong di CSV, kembalikan dummy placeholder estetik
-            return `https://placehold.co/600x600/f8fafc/94a3b8?text=${product ? product.sku : 'No Image'}.png`;
+            return `https://placehold.co/600x600/f8fafc/94a3b8?text=${product ? product.sku : 'No+Image'}.png`;
         };
 
         // UI Interactions
@@ -906,61 +906,18 @@
             lucide.createIcons();
         }
 
-        // Initial Data Fetch
+        // Initial Data Fetch dengan Lazy Loading
         async function fetchData() {
             const elLoading = document.getElementById('loading-overlay');
             const elError = document.getElementById('error-overlay');
             const elErrorMsg = document.getElementById('error-message');
             
             try {
-                // Fetch ketiga file CSV secara bersamaan (Utama, Referensi Merk, dan Referensi Gambar Baru)
-                const [mainRes, refRes, imgRes] = await Promise.all([
-                    fetch(CSV_URL),
-                    fetch(REF_CSV_URL),
-                    fetch(IMG_CSV_URL)
-                ]);
-
+                // 1. Fetch HANYA file CSV utama terlebih dahulu agar tampilan instan
+                const mainRes = await fetch(CSV_URL);
                 if (!mainRes.ok) throw new Error('Gagal mengambil data produk utama');
-                if (!refRes.ok) throw new Error('Gagal mengambil data referensi SKU (Merk/Kategori)');
-                if (!imgRes.ok) throw new Error('Gagal mengambil data referensi ID Gambar');
-
                 const mainText = await mainRes.text();
-                const refText = await refRes.text();
-                const imgText = await imgRes.text();
-
                 const parsed = parseCSV(mainText);
-                const refParsed = parseCSV(refText);
-                const imgParsed = parseCSV(imgText);
-
-                // Buat kamus (Map) referensi Kategori/Merk
-                const refMap = {};
-                if (refParsed.length > 0) {
-                    const refHeaders = refParsed[0].map(h => h.toLowerCase().trim());
-                    const refSkuIdx = refHeaders.findIndex(h => h === 'sku' || h.includes('sku') || h.includes('kode'));
-                    
-                    for (let i = 1; i < refParsed.length; i++) {
-                        const row = refParsed[i];
-                        const sku = refSkuIdx !== -1 && row[refSkuIdx] ? row[refSkuIdx].trim() : (row[0] ? row[0].trim() : null);
-                        if (sku) {
-                            const kategori = row.length > 4 && row[4] ? row[4].trim() : '-';
-                            const merk = row.length > 6 && row[6] ? row[6].trim() : '-';
-                            refMap[sku] = { kategori, merk };
-                        }
-                    }
-                }
-
-                // Buat kamus (Map) referensi Gambar berdasar SKU (Kolom 1 / index 0) & Image ID (Kolom 18 / index 17)
-                const imgMap = {};
-                if (imgParsed.length > 0) {
-                    for (let i = 1; i < imgParsed.length; i++) {
-                        const row = imgParsed[i];
-                        const sku = row[0] ? row[0].trim() : null; // SKU ada di kolom 1
-                        const imageId = row.length > 17 && row[17] ? row[17].trim() : null; // ID ada di kolom 18
-                        if (sku && imageId) {
-                            imgMap[sku] = imageId;
-                        }
-                    }
-                }
 
                 if (parsed.length > 0) {
                     const headers = parsed[0].map(h => h.toLowerCase().trim());
@@ -977,29 +934,17 @@
                         partai: headers.findIndex(h => h.includes('partai')),
                     };
 
-                    const categoriesSet = new Set();
-                    const brandsSet = new Set();
-
                     products = parsed.slice(1).map((row, index) => {
                         if (!row[colIdx.nama]) return null;
+                        const skuValue = colIdx.sku !== -1 && row[colIdx.sku] ? row[colIdx.sku].toString().trim() : '-';
                         
-                        const skuValue = colIdx.sku !== -1 && row[colIdx.sku] ? row[colIdx.sku].trim() : '-';
-                        
-                        // Tarik Kategori & Merk
-                        const refData = refMap[skuValue] || { kategori: '-', merk: '-' };
-                        // Tarik Image ID
-                        const imageIdValue = imgMap[skuValue] || null;
-
-                        if (refData.kategori && refData.kategori !== '-') categoriesSet.add(refData.kategori);
-                        if (refData.merk && refData.merk !== '-') brandsSet.add(refData.merk);
-
                         return {
                             id: skuValue !== '-' ? skuValue : `PROD-${index}`,
                             nama: colIdx.nama !== -1 ? row[colIdx.nama] : '-',
                             sku: skuValue,
-                            kategori: refData.kategori,
-                            merk: refData.merk,
-                            imageId: imageIdValue,
+                            kategori: '-', // Akan diisi di background
+                            merk: '-',     // Akan diisi di background
+                            imageId: null, // Akan diisi di background
                             unit: colIdx.unit !== -1 ? row[colIdx.unit] : '-',
                             stok: {
                                 gudang: colIdx.stokGudang !== -1 ? parseInt(row[colIdx.stokGudang] || 0) : 0,
@@ -1013,27 +958,101 @@
                             }
                         };
                     }).filter(p => p !== null);
-
-                    // Populate filters dropdowns UI
-                    availableCategories = Array.from(categoriesSet).sort();
-                    availableBrands = Array.from(brandsSet).sort();
-                    
-                    const listKategori = document.getElementById('list-kategori');
-                    const listMerk = document.getElementById('list-merk');
-
-                    if (availableCategories.length > 0 && listKategori) {
-                        listKategori.innerHTML = availableCategories.map(c => `<option value="${c}">`).join('');
-                        document.getElementById('container-filter-kategori').classList.remove('hidden');
-                    }
-
-                    if (availableBrands.length > 0 && listMerk) {
-                        listMerk.innerHTML = availableBrands.map(m => `<option value="${m}">`).join('');
-                        document.getElementById('container-filter-merk').classList.remove('hidden');
-                    }
                 }
                 
+                // Matikan loading segera setelah produk utama selesai!
                 if(elLoading) elLoading.classList.add('hidden');
                 renderProducts();
+
+                // 2. Fetch Data Referensi (Kategori, Merk, dan Gambar) di Belakang Layar (Background)
+                Promise.all([
+                    fetch(REF_CSV_URL),
+                    fetch(IMG_CSV_URL)
+                ]).then(async ([refRes, imgRes]) => {
+                    if (refRes.ok && imgRes.ok) {
+                        const refText = await refRes.text();
+                        const imgText = await imgRes.text();
+
+                        const refParsed = parseCSV(refText);
+                        const imgParsed = parseCSV(imgText);
+
+                        const refMap = {};
+                        if (refParsed.length > 0) {
+                            const refHeaders = refParsed[0].map(h => h.toLowerCase().trim());
+                            const refSkuIdx = refHeaders.findIndex(h => h === 'sku' || h.includes('sku') || h.includes('kode'));
+                            for (let i = 1; i < refParsed.length; i++) {
+                                const row = refParsed[i];
+                                const sku = refSkuIdx !== -1 && row[refSkuIdx] ? row[refSkuIdx].toString().trim().toUpperCase() : (row[0] ? row[0].toString().trim().toUpperCase() : null);
+                                if (sku) {
+                                    refMap[sku] = {
+                                        kategori: row.length > 4 && row[4] ? row[4].trim() : '-',
+                                        merk: row.length > 6 && row[6] ? row[6].trim() : '-'
+                                    };
+                                }
+                            }
+                        }
+
+                        const imgMap = {};
+                        if (imgParsed.length > 0) {
+                            for (let i = 1; i < imgParsed.length; i++) {
+                                const row = imgParsed[i];
+                                const sku = row[0] ? row[0].toString().trim().toUpperCase() : null;
+                                if (sku) {
+                                    let imageVal = row.length > 17 && row[17] ? row[17].toString().trim() : null;
+                                    
+                                    // PINTAR: Cari ID di seluruh baris jika tidak ada di kolom ke-18
+                                    if (!imageVal || imageVal === '-') {
+                                        const match = row.join(' ').match(/[-\w]{25,}/);
+                                        if (match) imageVal = match[0];
+                                    } else {
+                                        const match = imageVal.match(/[-\w]{25,}/);
+                                        if (match) imageVal = match[0];
+                                    }
+
+                                    if (imageVal) imgMap[sku] = imageVal;
+                                }
+                            }
+                        }
+
+                        // Menggabungkan data background ke state produk utama
+                        const categoriesSet = new Set();
+                        const brandsSet = new Set();
+
+                        products.forEach(p => {
+                            const skuKey = p.sku.toUpperCase();
+                            if (refMap[skuKey]) {
+                                p.kategori = refMap[skuKey].kategori;
+                                p.merk = refMap[skuKey].merk;
+                            }
+                            if (imgMap[skuKey]) {
+                                p.imageId = imgMap[skuKey];
+                            }
+                            
+                            if (p.kategori && p.kategori !== '-') categoriesSet.add(p.kategori);
+                            if (p.merk && p.merk !== '-') brandsSet.add(p.merk);
+                        });
+
+                        availableCategories = Array.from(categoriesSet).sort();
+                        availableBrands = Array.from(brandsSet).sort();
+                        
+                        const listKategori = document.getElementById('list-kategori');
+                        const listMerk = document.getElementById('list-merk');
+
+                        if (availableCategories.length > 0 && listKategori) {
+                            listKategori.innerHTML = availableCategories.map(c => `<option value="${c}">`).join('');
+                            document.getElementById('container-filter-kategori').classList.remove('hidden');
+                        }
+
+                        if (availableBrands.length > 0 && listMerk) {
+                            listMerk.innerHTML = availableBrands.map(m => `<option value="${m}">`).join('');
+                            document.getElementById('container-filter-merk').classList.remove('hidden');
+                        }
+
+                        // Render ulang secara diam-diam untuk menampilkan badge Kategori & Merk
+                        renderProducts();
+                    }
+                }).catch(err => console.log("Gagal memuat data referensi di background", err));
+
             } catch (err) {
                 if(elLoading) elLoading.classList.add('hidden');
                 if(elErrorMsg) elErrorMsg.innerText = err.message;

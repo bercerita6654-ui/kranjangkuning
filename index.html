@@ -31,7 +31,7 @@
         }
     </script>
 
-    <!-- Definisi Warna Dasar CSS (Menggunakan Spasi, bukan Koma agar terbaca oleh Tailwind) -->
+    <!-- Definisi Warna Dasar CSS -->
     <style>
         :root {
             /* Kuning Default */
@@ -104,13 +104,6 @@
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-        
-        .line-clamp-2 {
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
 
         /* Active click effect for mobile */
         .active-tap:active {
@@ -316,7 +309,7 @@
             </div>
         </div>
 
-        <!-- Overlay Mobile Cart -->
+        <!-- Overlay Mobile Cart (Disesuaikan z-index lg:z-auto untuk PC) -->
         <div id="cart-modal-overlay" class="fixed inset-0 z-[80] lg:z-auto bg-gray-900/60 p-4 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300 lg:static lg:bg-transparent lg:p-0 lg:opacity-100 lg:pointer-events-auto lg:col-span-5 xl:col-span-4 lg:block" onclick="if(event.target === this) closeMobileCart()">
             
             <div id="cart-section" class="bg-white rounded-3xl shadow-2xl w-full max-w-md max-h-[92vh] flex flex-col transform scale-95 transition-transform duration-300 lg:rounded-2xl lg:shadow-sm lg:sticky lg:top-24 lg:max-w-none lg:max-h-[calc(100vh-6.5rem)] lg:scale-100 lg:transform-none">
@@ -377,6 +370,60 @@
                 Lihat Keranjang
                 <span id="mobile-cart-badge-bottom" class="bg-white text-primary-900 rounded-md px-2 py-0.5 text-xs">0</span>
             </button>
+        </div>
+    </div>
+
+    <!-- Product Detail & Photo Modal (POP-UP DETIL & FOTO BARU) -->
+    <div id="product-detail-modal" class="fixed inset-0 z-[120] items-center justify-center bg-gray-900/60 p-4 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300" onclick="if(event.target === this) closeProductDetailModal()">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col max-h-[92vh] transform scale-95 transition-transform duration-300" id="product-detail-modal-content">
+            <div class="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+                <h2 class="text-lg font-bold flex items-center gap-2 text-gray-800">
+                    <div class="bg-primary-100 text-primary-600 p-1.5 rounded-lg"><i data-lucide="image" class="w-5 h-5"></i></div>
+                    Detail & Foto Produk
+                </h2>
+                <button onclick="closeProductDetailModal()" class="text-gray-400 hover:text-gray-600 p-2 rounded-full transition-colors active-tap">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            
+            <div class="p-6 overflow-y-auto flex-1 custom-scrollbar space-y-5">
+                <!-- Frame Foto Produk -->
+                <div class="bg-gray-50 rounded-2xl overflow-hidden relative aspect-square flex items-center justify-center border border-gray-100 shadow-inner">
+                    <div id="modal-img-loader" class="absolute animate-spin rounded-full h-10 w-10 border-4 border-gray-200 border-t-primary-500 z-10"></div>
+                    <img id="modal-product-img" class="w-full h-full object-contain transition-opacity duration-300 opacity-0" src="" alt="Foto Produk" onload="document.getElementById('modal-img-loader').classList.add('hidden'); this.classList.remove('opacity-0')" onerror="this.src='https://placehold.co/600x600/f8fafc/94a3b8?text=Gambar+Tidak+Ada'; document.getElementById('modal-img-loader').classList.add('hidden'); this.classList.remove('opacity-0')">
+                </div>
+
+                <div>
+                    <span id="modal-product-sku" class="text-xs font-bold text-primary-700 bg-primary-50 px-2.5 py-1 rounded-md tracking-wider">SKU</span>
+                    <h3 id="modal-product-name" class="font-black text-xl text-gray-800 mt-2.5 leading-snug">Nama Produk</h3>
+                    <p id="modal-product-brand-cat" class="text-xs text-gray-400 font-semibold mt-1.5 uppercase tracking-wide">KATEGORI | MERK</p>
+                </div>
+
+                <!-- Detail List Harga -->
+                <div class="grid grid-cols-3 gap-3 bg-gray-50/80 p-4 rounded-2xl border border-gray-100">
+                    <div class="text-center">
+                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Eceran</span>
+                        <p id="modal-price-eceran" class="text-sm font-black text-gray-800 mt-0.5">Rp 0</p>
+                    </div>
+                    <div class="text-center border-x border-gray-200/80">
+                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Grosir</span>
+                        <p id="modal-price-grosir" class="text-sm font-black text-gray-800 mt-0.5">Rp 0</p>
+                    </div>
+                    <div class="text-center">
+                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Partai</span>
+                        <p id="modal-price-partai" class="text-sm font-black text-gray-800 mt-0.5">Rp 0</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-5 bg-white border-t border-gray-100 flex gap-3">
+                <button id="modal-btn-add-cart" class="active-tap flex-1 py-3.5 bg-primary-400 hover:bg-primary-500 text-primary-900 font-bold rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-primary-400/30 text-sm">
+                    <i data-lucide="plus-circle" class="w-5 h-5"></i> Tambah Keranjang
+                </button>
+                <button onclick="closeProductDetailModal()" class="active-tap px-5 py-3.5 bg-gray-50 border border-gray-200 rounded-xl font-semibold text-gray-500 hover:bg-gray-100 hover:text-gray-700 text-sm">
+                    Tutup
+                </button>
+            </div>
         </div>
     </div>
 
@@ -485,6 +532,7 @@
         </div>
     </div>
 
+    <!-- Core Scripts -->
     <script>
         // Inisialisasi ikon
         lucide.createIcons();
@@ -507,15 +555,21 @@
         let catalogTiers = {};
         let catalogCustomPrices = {};
 
+        // SETUP URL CSV
         const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTCxz1GPm7QU9IS1yBiSjvIdNTLUsvvplOCyT_R3XH4O-LuVbHoY_bXn1LTH5lpnlolJ29BhUgEdnFm/pub?gid=240870130&single=true&output=csv';
         const REF_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTCxz1GPm7QU9IS1yBiSjvIdNTLUsvvplOCyT_R3XH4O-LuVbHoY_bXn1LTH5lpnlolJ29BhUgEdnFm/pub?gid=1564332470&single=true&output=csv';
+        // URL CSV GAMBAR (Kolom 1: SKU, Kolom 18/Index 17: ID Gambar)
+        const IMG_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSgE2FWnQADRb6KEpjFd-Z3kC435S5dGJMtuiBkuDSqkkWfLQuXgM5YLohuZX9yHx_DG3GYZ54tGWXl/pub?gid=0&single=true&output=csv';
+        
         const STORAGE_KEY = 'keranjangKuning_history';
 
         // Fungsi Tema Dinamis
         window.toggleThemeMenu = () => {
             const menu = document.getElementById('theme-menu');
-            menu.classList.toggle('hidden');
-            menu.classList.toggle('flex');
+            if(menu) {
+                menu.classList.toggle('hidden');
+                menu.classList.toggle('flex');
+            }
         };
 
         window.setTheme = (themeName) => {
@@ -524,8 +578,10 @@
             localStorage.setItem('keranjangKuning_theme', themeName);
             localStorage.removeItem('keranjangKuning_customTheme');
             const menu = document.getElementById('theme-menu');
-            menu.classList.add('hidden');
-            menu.classList.remove('flex');
+            if(menu) {
+                menu.classList.add('hidden');
+                menu.classList.remove('flex');
+            }
         };
 
         window.setCustomTheme = (hex) => {
@@ -594,8 +650,10 @@
             localStorage.removeItem('keranjangKuning_theme');
             
             const menu = document.getElementById('theme-menu');
-            menu.classList.add('hidden');
-            menu.classList.remove('flex');
+            if(menu) {
+                menu.classList.add('hidden');
+                menu.classList.remove('flex');
+            }
         };
 
         // On load Theme Init
@@ -603,7 +661,8 @@
         const savedCustomTheme = localStorage.getItem('keranjangKuning_customTheme');
 
         if (savedCustomTheme) {
-            document.getElementById('custom-color-picker').value = savedCustomTheme;
+            const picker = document.getElementById('custom-color-picker');
+            if(picker) picker.value = savedCustomTheme;
             setCustomTheme(savedCustomTheme);
         } else if (savedTheme && savedTheme !== 'yellow') {
             document.documentElement.setAttribute('data-theme', savedTheme);
@@ -613,7 +672,7 @@
         document.addEventListener('click', (e) => {
             const container = document.getElementById('theme-dropdown-container');
             const menu = document.getElementById('theme-menu');
-            if (container && !container.contains(e.target)) {
+            if (container && menu && !container.contains(e.target)) {
                 menu.classList.add('hidden');
                 menu.classList.remove('flex');
             }
@@ -659,6 +718,8 @@
             const content = document.getElementById('toast-content');
             const icon = document.getElementById('toast-icon');
             const msgEl = document.getElementById('toast-msg');
+
+            if(!popup || !content || !icon || !msgEl) return;
 
             msgEl.innerText = msg;
             
@@ -707,6 +768,16 @@
             return item.product.harga[item.priceTier] || 0;
         };
 
+        // Fungsi untuk mengambil foto produk dari folder Google Drive berdasarkan ID File yang dipetakan dari CSV
+        const getProductImageUrl = (product) => {
+            if (product && product.imageId && product.imageId.trim() !== '' && product.imageId !== '-') {
+                // Endpoint standar URL Google Drive untuk gambar
+                return `https://drive.google.com/uc?export=view&id=${product.imageId.trim()}`;
+            }
+            // Jika ID Gambar kosong di CSV, kembalikan dummy placeholder estetik
+            return `https://placehold.co/600x600/f8fafc/94a3b8?text=${product ? product.sku : 'No Image'}.png`;
+        };
+
         // UI Interactions
         window.openMobileCart = () => {
             const overlay = document.getElementById('cart-modal-overlay');
@@ -727,6 +798,66 @@
                 section.classList.remove('scale-100');
                 section.classList.add('scale-95');
                 document.body.style.overflow = '';
+            }
+        };
+
+        // Fungsi membuka Pop-Up Detil dan Foto Produk
+        window.openProductDetailModal = (productId) => {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+
+            document.getElementById('modal-product-name').innerText = product.nama;
+            document.getElementById('modal-product-sku').innerText = `SKU: ${product.sku}`;
+            document.getElementById('modal-product-brand-cat').innerText = `${product.kategori} | ${product.merk}`;
+            
+            document.getElementById('modal-price-eceran').innerText = formatRupiah(product.harga.eceran);
+            document.getElementById('modal-price-grosir').innerText = formatRupiah(product.harga.grosir);
+            document.getElementById('modal-price-partai').innerText = formatRupiah(product.harga.partai);
+
+            const imgEl = document.getElementById('modal-product-img');
+            const loaderEl = document.getElementById('modal-img-loader');
+            
+            if(imgEl && loaderEl) {
+                imgEl.classList.add('opacity-0');
+                loaderEl.classList.remove('hidden');
+                // Menggunakan fungsi pemanggilan langsung via ID yang ditarik dari CSV baru
+                imgEl.src = getProductImageUrl(product);
+            }
+
+            const btnAddCart = document.getElementById('modal-btn-add-cart');
+            if(btnAddCart) {
+                btnAddCart.onclick = () => {
+                    addToCart(product.id);
+                    showToast(`Ditambahkan ke keranjang: ${product.nama}`, 'success');
+                    closeProductDetailModal();
+                };
+            }
+
+            const modal = document.getElementById('product-detail-modal');
+            const content = document.getElementById('product-detail-modal-content');
+            if(modal && content) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                void modal.offsetWidth; 
+                modal.classList.remove('opacity-0');
+                content.classList.remove('scale-95');
+                content.classList.add('scale-100');
+            }
+            
+            lucide.createIcons();
+        };
+
+        window.closeProductDetailModal = () => {
+            const modal = document.getElementById('product-detail-modal');
+            const content = document.getElementById('product-detail-modal-content');
+            if(modal && content) {
+                modal.classList.add('opacity-0');
+                content.classList.remove('scale-100');
+                content.classList.add('scale-95');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                }, 300);
             }
         };
 
@@ -775,55 +906,33 @@
             lucide.createIcons();
         }
 
-        // DOM Elements
-        const elLoading = document.getElementById('loading-overlay');
-        const elError = document.getElementById('error-overlay');
-        const elErrorMsg = document.getElementById('error-message');
-        const elProductList = document.getElementById('product-list');
-        const elCartList = document.getElementById('cart-list');
-        const elCartBadge = document.getElementById('cart-badge-count');
-        const elCartTotalBadge = document.getElementById('cart-total-badge');
-        const elCartTotal = document.getElementById('cart-total-price');
-        const elBtnCheckout = document.getElementById('btn-checkout');
-        const elSearch = document.getElementById('input-search');
-        const elFilterKategori = document.getElementById('filter-kategori');
-        const elFilterMerk = document.getElementById('filter-merk');
-        const listKategori = document.getElementById('list-kategori');
-        const listMerk = document.getElementById('list-merk');
-        const elModal = document.getElementById('checkout-modal');
-        const elModalContent = document.getElementById('checkout-modal-content');
-        
-        // Mobile UI Elements
-        const elMobileCartBar = document.getElementById('mobile-cart-bar');
-        const elMobileCartTotal = document.getElementById('mobile-cart-total');
-        const elMobileCartBadge = document.getElementById('mobile-cart-badge-bottom');
-
-        // Pagination Elements
-        const elPaginationControls = document.getElementById('pagination-controls');
-        const elSelectItems = document.getElementById('select-items-per-page');
-        const elBtnPrev = document.getElementById('btn-prev-page');
-        const elBtnNext = document.getElementById('btn-next-page');
-        const elPaginationInfo = document.getElementById('pagination-info');
-
         // Initial Data Fetch
         async function fetchData() {
+            const elLoading = document.getElementById('loading-overlay');
+            const elError = document.getElementById('error-overlay');
+            const elErrorMsg = document.getElementById('error-message');
+            
             try {
-                // Fetch kedua file CSV secara bersamaan (Utama dan Referensi SKU)
-                const [mainRes, refRes] = await Promise.all([
+                // Fetch ketiga file CSV secara bersamaan (Utama, Referensi Merk, dan Referensi Gambar Baru)
+                const [mainRes, refRes, imgRes] = await Promise.all([
                     fetch(CSV_URL),
-                    fetch(REF_CSV_URL)
+                    fetch(REF_CSV_URL),
+                    fetch(IMG_CSV_URL)
                 ]);
 
                 if (!mainRes.ok) throw new Error('Gagal mengambil data produk utama');
                 if (!refRes.ok) throw new Error('Gagal mengambil data referensi SKU (Merk/Kategori)');
+                if (!imgRes.ok) throw new Error('Gagal mengambil data referensi ID Gambar');
 
                 const mainText = await mainRes.text();
                 const refText = await refRes.text();
+                const imgText = await imgRes.text();
 
                 const parsed = parseCSV(mainText);
                 const refParsed = parseCSV(refText);
+                const imgParsed = parseCSV(imgText);
 
-                // Buat kamus (Map) referensi dari file CSV ke-2
+                // Buat kamus (Map) referensi Kategori/Merk
                 const refMap = {};
                 if (refParsed.length > 0) {
                     const refHeaders = refParsed[0].map(h => h.toLowerCase().trim());
@@ -831,14 +940,24 @@
                     
                     for (let i = 1; i < refParsed.length; i++) {
                         const row = refParsed[i];
-                        // Jika kolom sku tidak ketemu di header, default asumsikan kolom pertama (index 0)
                         const sku = refSkuIdx !== -1 && row[refSkuIdx] ? row[refSkuIdx].trim() : (row[0] ? row[0].trim() : null);
-                        
                         if (sku) {
-                            // Sesuai permintaan: Kolom ke 5 = index 4, Kolom ke 7 = index 6
                             const kategori = row.length > 4 && row[4] ? row[4].trim() : '-';
                             const merk = row.length > 6 && row[6] ? row[6].trim() : '-';
                             refMap[sku] = { kategori, merk };
+                        }
+                    }
+                }
+
+                // Buat kamus (Map) referensi Gambar berdasar SKU (Kolom 1 / index 0) & Image ID (Kolom 18 / index 17)
+                const imgMap = {};
+                if (imgParsed.length > 0) {
+                    for (let i = 1; i < imgParsed.length; i++) {
+                        const row = imgParsed[i];
+                        const sku = row[0] ? row[0].trim() : null; // SKU ada di kolom 1
+                        const imageId = row.length > 17 && row[17] ? row[17].trim() : null; // ID ada di kolom 18
+                        if (sku && imageId) {
+                            imgMap[sku] = imageId;
                         }
                     }
                 }
@@ -866,20 +985,21 @@
                         
                         const skuValue = colIdx.sku !== -1 && row[colIdx.sku] ? row[colIdx.sku].trim() : '-';
                         
-                        // Tarik data Kategori & Merk dari file referensi CSV kedua berdasarkan SKU yang cocok
+                        // Tarik Kategori & Merk
                         const refData = refMap[skuValue] || { kategori: '-', merk: '-' };
-                        const kategori = refData.kategori;
-                        const merk = refData.merk;
+                        // Tarik Image ID
+                        const imageIdValue = imgMap[skuValue] || null;
 
-                        if (kategori && kategori !== '-') categoriesSet.add(kategori);
-                        if (merk && merk !== '-') brandsSet.add(merk);
+                        if (refData.kategori && refData.kategori !== '-') categoriesSet.add(refData.kategori);
+                        if (refData.merk && refData.merk !== '-') brandsSet.add(refData.merk);
 
                         return {
                             id: skuValue !== '-' ? skuValue : `PROD-${index}`,
                             nama: colIdx.nama !== -1 ? row[colIdx.nama] : '-',
                             sku: skuValue,
-                            kategori: kategori,
-                            merk: merk,
+                            kategori: refData.kategori,
+                            merk: refData.merk,
+                            imageId: imageIdValue,
                             unit: colIdx.unit !== -1 ? row[colIdx.unit] : '-',
                             stok: {
                                 gudang: colIdx.stokGudang !== -1 ? parseInt(row[colIdx.stokGudang] || 0) : 0,
@@ -897,25 +1017,30 @@
                     // Populate filters dropdowns UI
                     availableCategories = Array.from(categoriesSet).sort();
                     availableBrands = Array.from(brandsSet).sort();
+                    
+                    const listKategori = document.getElementById('list-kategori');
+                    const listMerk = document.getElementById('list-merk');
 
-                    if (availableCategories.length > 0) {
+                    if (availableCategories.length > 0 && listKategori) {
                         listKategori.innerHTML = availableCategories.map(c => `<option value="${c}">`).join('');
                         document.getElementById('container-filter-kategori').classList.remove('hidden');
                     }
 
-                    if (availableBrands.length > 0) {
+                    if (availableBrands.length > 0 && listMerk) {
                         listMerk.innerHTML = availableBrands.map(m => `<option value="${m}">`).join('');
                         document.getElementById('container-filter-merk').classList.remove('hidden');
                     }
                 }
                 
-                elLoading.classList.add('hidden');
+                if(elLoading) elLoading.classList.add('hidden');
                 renderProducts();
             } catch (err) {
-                elLoading.classList.add('hidden');
-                elErrorMsg.innerText = err.message;
-                elError.classList.remove('hidden');
-                elError.classList.add('flex');
+                if(elLoading) elLoading.classList.add('hidden');
+                if(elErrorMsg) elErrorMsg.innerText = err.message;
+                if(elError) {
+                    elError.classList.remove('hidden');
+                    elError.classList.add('flex');
+                }
             }
         }
 
@@ -931,6 +1056,14 @@
 
         // Render Functions
         function renderProducts() {
+            const elProductList = document.getElementById('product-list');
+            const elPaginationControls = document.getElementById('pagination-controls');
+            const elPaginationInfo = document.getElementById('pagination-info');
+            const elBtnPrev = document.getElementById('btn-prev-page');
+            const elBtnNext = document.getElementById('btn-next-page');
+
+            if(!elProductList) return;
+
             const filtered = getFilteredProducts();
             const totalPages = Math.ceil(filtered.length / itemsPerPage);
             
@@ -945,7 +1078,7 @@
                     <i data-lucide="package-search" class="w-16 h-16 mb-3 text-gray-300"></i>
                     <p class="font-medium">Produk tidak ditemukan.</p>
                 </div>`;
-                elPaginationControls.classList.add('hidden');
+                if(elPaginationControls) elPaginationControls.classList.add('hidden');
                 lucide.createIcons();
                 return;
             }
@@ -966,7 +1099,13 @@
                         <div class="flex items-center mb-2 flex-wrap gap-1">
                             ${badgesHtml}
                         </div>
-                        <h3 class="font-bold text-gray-800 leading-snug mb-3 group-hover:text-primary-600 transition-colors" title="${product.nama.replace(/"/g, '&quot;')}">${product.nama}</h3>
+                        
+                        <!-- Nama produk dibuat interaktif (bisa diklik untuk Pop-up Detail & Foto) -->
+                        <h3 onclick="openProductDetailModal('${product.id}')" class="font-bold text-gray-800 leading-snug mb-3 hover:text-primary-600 cursor-pointer hover:underline transition-colors flex items-start gap-1.5" title="Klik untuk lihat rincian & foto produk">
+                            <span>${product.nama}</span>
+                            <i data-lucide="image" class="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0"></i>
+                        </h3>
+                        
                         <div class="flex gap-2.5 mt-auto text-[11px] font-semibold">
                             <span class="flex items-center gap-1 text-gray-600 bg-gray-100 px-2 py-1 rounded-md border border-gray-200"><i data-lucide="store" class="w-3.5 h-3.5"></i> Toko: ${product.stok.toko}</span>
                             <span class="flex items-center gap-1 text-gray-600 bg-gray-100 px-2 py-1 rounded-md border border-gray-200"><i data-lucide="warehouse" class="w-3.5 h-3.5"></i> Gudang: ${product.stok.gudang}</span>
@@ -1012,120 +1151,148 @@
                 </div>`;
             }).join('');
 
-            elPaginationControls.classList.remove('hidden');
-            elPaginationInfo.innerText = `${currentPage} / ${totalPages}`;
-            elBtnPrev.disabled = currentPage === 1;
-            elBtnNext.disabled = currentPage === totalPages;
+            if(elPaginationControls && elPaginationInfo && elBtnPrev && elBtnNext) {
+                elPaginationControls.classList.remove('hidden');
+                elPaginationInfo.innerText = `${currentPage} / ${totalPages}`;
+                elBtnPrev.disabled = currentPage === 1;
+                elBtnNext.disabled = currentPage === totalPages;
+            }
 
             lucide.createIcons();
         }
 
         function renderCart() {
+            const elCartList = document.getElementById('cart-list');
+            const elCartBadge = document.getElementById('cart-badge-count');
+            const elCartTotalBadge = document.getElementById('cart-total-badge');
+            const elCartTotal = document.getElementById('cart-total-price');
+            const elMobileCartTotal = document.getElementById('mobile-cart-total');
+            const elMobileCartBadge = document.getElementById('mobile-cart-badge-bottom');
+            const elMobileCartBar = document.getElementById('mobile-cart-bar');
+            const elBtnCheckout = document.getElementById('btn-checkout');
+            const btnDraft = document.getElementById('btn-save-draft');
+
             const totalQty = cart.reduce((sum, item) => sum + item.qty, 0);
             const cartTotal = cart.reduce((sum, item) => sum + (getItemPrice(item) * item.qty), 0);
             
             // Update Deskstop/Global Headers
-            elCartBadge.innerText = totalQty;
-            elCartTotal.innerText = formatRupiah(cartTotal);
+            if(elCartBadge) elCartBadge.innerText = totalQty;
+            if(elCartTotal) elCartTotal.innerText = formatRupiah(cartTotal);
             
-            if(totalQty > 0) {
-                elCartTotalBadge.innerText = `${totalQty} Barang`;
-                elCartTotalBadge.classList.remove('hidden');
-            } else {
-                elCartTotalBadge.classList.add('hidden');
+            if(elCartTotalBadge) {
+                if(totalQty > 0) {
+                    elCartTotalBadge.innerText = `${totalQty} Barang`;
+                    elCartTotalBadge.classList.remove('hidden');
+                } else {
+                    elCartTotalBadge.classList.add('hidden');
+                }
             }
 
             // Update Mobile Sticky Footer
-            elMobileCartTotal.innerText = formatRupiah(cartTotal);
-            elMobileCartBadge.innerText = totalQty;
-            if(totalQty > 0) {
-                elMobileCartBar.classList.remove('translate-y-full');
-            } else {
-                elMobileCartBar.classList.add('translate-y-full');
+            if(elMobileCartTotal) elMobileCartTotal.innerText = formatRupiah(cartTotal);
+            if(elMobileCartBadge) elMobileCartBadge.innerText = totalQty;
+            
+            if(elMobileCartBar) {
+                if(totalQty > 0) {
+                    elMobileCartBar.classList.remove('translate-y-full');
+                } else {
+                    elMobileCartBar.classList.add('translate-y-full');
+                }
             }
 
             if (cart.length === 0) {
-                elCartList.innerHTML = `
-                    <div class="text-center py-16 text-gray-400 flex flex-col items-center justify-center h-full">
-                        <div class="bg-gray-50 p-4 rounded-full mb-3">
-                            <i data-lucide="shopping-cart" class="w-10 h-10 text-gray-300"></i>
-                        </div>
-                        <p class="text-sm font-medium">Keranjang masih kosong</p>
-                        <p class="text-xs mt-1 text-gray-400">Silakan tambah produk dulu</p>
-                    </div>`;
-                elBtnCheckout.disabled = true;
-                elBtnCheckout.className = "active-tap w-2/3 py-3.5 rounded-xl font-bold text-lg flex justify-center items-center gap-2 transition-all bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200";
+                if(elCartList) {
+                    elCartList.innerHTML = `
+                        <div class="text-center py-16 text-gray-400 flex flex-col items-center justify-center h-full">
+                            <div class="bg-gray-50 p-4 rounded-full mb-3">
+                                <i data-lucide="shopping-cart" class="w-10 h-10 text-gray-300"></i>
+                            </div>
+                            <p class="text-sm font-medium">Keranjang masih kosong</p>
+                            <p class="text-xs mt-1 text-gray-400">Silakan tambah produk dulu</p>
+                        </div>`;
+                }
                 
-                const btnDraft = document.getElementById('btn-save-draft');
-                btnDraft.disabled = true;
-                btnDraft.className = "active-tap w-1/3 py-3.5 rounded-xl font-bold text-sm flex justify-center items-center gap-1.5 transition-all bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200";
+                if(elBtnCheckout) {
+                    elBtnCheckout.disabled = true;
+                    elBtnCheckout.className = "active-tap w-2/3 py-3.5 rounded-xl font-bold text-lg flex justify-center items-center gap-2 transition-all bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200";
+                }
+                
+                if(btnDraft) {
+                    btnDraft.disabled = true;
+                    btnDraft.className = "active-tap w-1/3 py-3.5 rounded-xl font-bold text-sm flex justify-center items-center gap-1.5 transition-all bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200";
+                }
 
                 lucide.createIcons();
                 syncProductButtons();
                 return;
             }
 
-            elCartList.innerHTML = cart.map(item => {
-                const price = getItemPrice(item);
-                const subtotal = price * item.qty;
-                return `
-                <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-[0_2px_10px_-3px_rgba(0,0,0,0.05)] relative group animate-[fadeIn_0.3s_ease-out]">
-                    <button onclick="removeCartItem('${item.product.id}')" class="absolute top-3 right-3 text-gray-300 hover:text-red-500 hover:bg-red-50 p-1.5 rounded-full transition-colors active-tap">
-                        <i data-lucide="trash-2" class="w-4 h-4"></i>
-                    </button>
-                    
-                    <h4 class="font-bold text-sm text-gray-800 pr-8 leading-snug mb-3">${item.product.nama}</h4>
-                    
-                    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 mt-2">
-                        <div class="flex-1 w-full space-y-2">
-                            <select onchange="updateCartPriceTier('${item.product.id}', this.value)" class="w-full text-xs font-semibold border border-gray-200 rounded-lg py-2 px-2.5 bg-gray-50 text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:bg-white transition-colors cursor-pointer appearance-none bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%236b7280%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E')] bg-[length:10px_10px] bg-no-repeat bg-[position:right_10px_center]">
-                                <option value="eceran" ${item.priceTier === 'eceran' ? 'selected' : ''}>Harga Eceran (${formatRupiah(item.product.harga.eceran)})</option>
-                                <option value="grosir" ${item.priceTier === 'grosir' ? 'selected' : ''}>Harga Grosir (${formatRupiah(item.product.harga.grosir)})</option>
-                                <option value="partai" ${item.priceTier === 'partai' ? 'selected' : ''}>Harga Partai (${formatRupiah(item.product.harga.partai)})</option>
-                                <option value="custom" ${item.priceTier === 'custom' ? 'selected' : ''}>Harga Custom</option>
-                            </select>
-                            
-                            ${item.priceTier === 'custom' ? `
-                            <div class="flex items-center bg-white border border-gray-300 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-primary-400 focus-within:border-primary-400 shadow-sm mt-1">
-                                <span class="bg-gray-100 text-gray-500 px-3 py-1.5 text-xs font-bold border-r border-gray-300">Rp</span>
-                                <input type="number" onchange="updateCustomPrice('${item.product.id}', this.value)" value="${item.customPrice || 0}" class="w-full px-2 py-1.5 text-sm font-bold text-gray-800 outline-none" placeholder="0" />
-                            </div>
-                            ` : ''}
+            if(elCartList) {
+                elCartList.innerHTML = cart.map(item => {
+                    const price = getItemPrice(item);
+                    const subtotal = price * item.qty;
+                    return `
+                    <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-[0_2px_10px_-3px_rgba(0,0,0,0.05)] relative group animate-[fadeIn_0.3s_ease-out]">
+                        <button onclick="removeCartItem('${item.product.id}')" class="absolute top-3 right-3 text-gray-300 hover:text-red-500 hover:bg-red-50 p-1.5 rounded-full transition-colors active-tap">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                        
+                        <h4 class="font-bold text-sm text-gray-800 pr-8 leading-snug mb-3">${item.product.nama}</h4>
+                        
+                        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 mt-2">
+                            <div class="flex-1 w-full space-y-2">
+                                <select onchange="updateCartPriceTier('${item.product.id}', this.value)" class="w-full text-xs font-semibold border border-gray-200 rounded-lg py-2 px-2.5 bg-gray-50 text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:bg-white transition-colors cursor-pointer appearance-none bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%236b7280%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E')] bg-[length:10px_10px] bg-no-repeat bg-[position:right_10px_center]">
+                                    <option value="eceran" ${item.priceTier === 'eceran' ? 'selected' : ''}>Harga Eceran (${formatRupiah(item.product.harga.eceran)})</option>
+                                    <option value="grosir" ${item.priceTier === 'grosir' ? 'selected' : ''}>Harga Grosir (${formatRupiah(item.product.harga.grosir)})</option>
+                                    <option value="partai" ${item.priceTier === 'partai' ? 'selected' : ''}>Harga Partai (${formatRupiah(item.product.harga.partai)})</option>
+                                    <option value="custom" ${item.priceTier === 'custom' ? 'selected' : ''}>Harga Custom</option>
+                                </select>
+                                
+                                ${item.priceTier === 'custom' ? `
+                                <div class="flex items-center bg-white border border-gray-300 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-primary-400 focus-within:border-primary-400 shadow-sm mt-1">
+                                    <span class="bg-gray-100 text-gray-500 px-3 py-1.5 text-xs font-bold border-r border-gray-300">Rp</span>
+                                    <input type="number" onchange="updateCustomPrice('${item.product.id}', this.value)" value="${item.customPrice || 0}" class="w-full px-2 py-1.5 text-sm font-bold text-gray-800 outline-none" placeholder="0" />
+                                </div>
+                                ` : ''}
 
-                            <div class="text-sm font-black text-primary-600 pt-1 block sm:hidden">
-                                Subtotal: ${formatRupiah(subtotal)}
+                                <div class="text-sm font-black text-primary-600 pt-1 block sm:hidden">
+                                    Subtotal: ${formatRupiah(subtotal)}
+                                </div>
+                            </div>
+
+                            <div class="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto mt-2 sm:mt-0">
+                                <div class="text-sm font-black text-primary-600 pt-1 hidden sm:block mr-2">
+                                    ${formatRupiah(subtotal)}
+                                </div>
+                                <div class="flex items-center bg-gray-100 rounded-xl p-1 border border-gray-200 shadow-inner">
+                                    <button onclick="updateCartQty('${item.product.id}', -1)" class="active-tap w-8 h-8 flex items-center justify-center bg-white rounded-lg ${item.qty === 1 ? 'text-red-500 hover:text-red-600 border-red-100' : 'text-gray-600 hover:text-gray-900 border-gray-200/50'} shadow-sm border">
+                                        <i data-lucide="${item.qty === 1 ? 'trash-2' : 'minus'}" class="w-4 h-4"></i>
+                                    </button>
+                                    <input type="number" onchange="updateCartQtyManual('${item.product.id}', this.value)" value="${item.qty}" class="text-sm font-bold w-12 text-center bg-transparent outline-none focus:bg-white focus:ring-2 focus:ring-primary-400 rounded-md py-1 transition-all" min="0" />
+                                    <button onclick="updateCartQty('${item.product.id}', 1)" class="active-tap w-8 h-8 flex items-center justify-center bg-white rounded-lg text-gray-600 hover:text-gray-900 shadow-sm border border-gray-200/50">
+                                        <i data-lucide="plus" class="w-4 h-4"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto mt-2 sm:mt-0">
-                            <div class="text-sm font-black text-primary-600 pt-1 hidden sm:block mr-2">
-                                ${formatRupiah(subtotal)}
-                            </div>
-                            <div class="flex items-center bg-gray-100 rounded-xl p-1 border border-gray-200 shadow-inner">
-                                <button onclick="updateCartQty('${item.product.id}', -1)" class="active-tap w-8 h-8 flex items-center justify-center bg-white rounded-lg ${item.qty === 1 ? 'text-red-500 hover:text-red-600 border-red-100' : 'text-gray-600 hover:text-gray-900 border-gray-200/50'} shadow-sm border">
-                                    <i data-lucide="${item.qty === 1 ? 'trash-2' : 'minus'}" class="w-4 h-4"></i>
-                                </button>
-                                <input type="number" onchange="updateCartQtyManual('${item.product.id}', this.value)" value="${item.qty}" class="text-sm font-bold w-12 text-center bg-transparent outline-none focus:bg-white focus:ring-2 focus:ring-primary-400 rounded-md py-1 transition-all" min="0" />
-                                <button onclick="updateCartQty('${item.product.id}', 1)" class="active-tap w-8 h-8 flex items-center justify-center bg-white rounded-lg text-gray-600 hover:text-gray-900 shadow-sm border border-gray-200/50">
-                                    <i data-lucide="plus" class="w-4 h-4"></i>
-                                </button>
-                            </div>
+                        <div class="mt-3 bg-primary-50/50 border border-primary-100 rounded-lg p-2 flex items-center gap-2 focus-within:ring-2 focus-within:ring-primary-400 focus-within:border-primary-400 transition-all">
+                            <i data-lucide="pen-line" class="w-4 h-4 text-primary-500"></i>
+                            <input type="text" onchange="updateCartItemNote('${item.product.id}', this.value)" value="${item.note || ''}" class="w-full bg-transparent text-xs text-gray-700 outline-none placeholder-gray-400" placeholder="Catatan khusus item ini (opsional)..." />
                         </div>
-                    </div>
+                    </div>`;
+                }).join('');
+            }
 
-                    <div class="mt-3 bg-primary-50/50 border border-primary-100 rounded-lg p-2 flex items-center gap-2 focus-within:ring-2 focus-within:ring-primary-400 focus-within:border-primary-400 transition-all">
-                        <i data-lucide="pen-line" class="w-4 h-4 text-primary-500"></i>
-                        <input type="text" onchange="updateCartItemNote('${item.product.id}', this.value)" value="${item.note || ''}" class="w-full bg-transparent text-xs text-gray-700 outline-none placeholder-gray-400" placeholder="Catatan khusus item ini (opsional)..." />
-                    </div>
-                </div>`;
-            }).join('');
-
-            elBtnCheckout.disabled = false;
-            elBtnCheckout.className = "active-tap w-2/3 py-3.5 rounded-xl font-bold text-lg flex justify-center items-center gap-2 transition-all bg-primary-400 hover:bg-primary-500 text-primary-900 shadow-lg shadow-primary-400/30 cursor-pointer";
+            if(elBtnCheckout) {
+                elBtnCheckout.disabled = false;
+                elBtnCheckout.className = "active-tap w-2/3 py-3.5 rounded-xl font-bold text-lg flex justify-center items-center gap-2 transition-all bg-primary-400 hover:bg-primary-500 text-primary-900 shadow-lg shadow-primary-400/30 cursor-pointer";
+            }
             
-            const btnDraft = document.getElementById('btn-save-draft');
-            btnDraft.disabled = false;
-            btnDraft.className = "active-tap w-1/3 py-3.5 rounded-xl font-bold text-sm flex justify-center items-center gap-1.5 transition-all bg-primary-50 hover:bg-primary-100 text-primary-700 shadow-sm cursor-pointer border border-primary-200";
+            if(btnDraft) {
+                btnDraft.disabled = false;
+                btnDraft.className = "active-tap w-1/3 py-3.5 rounded-xl font-bold text-sm flex justify-center items-center gap-1.5 transition-all bg-primary-50 hover:bg-primary-100 text-primary-700 shadow-sm cursor-pointer border border-primary-200";
+            }
 
             lucide.createIcons();
             syncProductButtons();
@@ -1164,10 +1331,12 @@
 
             // Add subtle notification/bounce effect on cart icon
             const badge = document.getElementById('cart-badge-count');
-            badge.parentElement.classList.add('scale-110', 'bg-primary-200');
-            setTimeout(() => {
-                badge.parentElement.classList.remove('scale-110', 'bg-primary-200');
-            }, 200);
+            if(badge && badge.parentElement) {
+                badge.parentElement.classList.add('scale-110', 'bg-primary-200');
+                setTimeout(() => {
+                    badge.parentElement.classList.remove('scale-110', 'bg-primary-200');
+                }, 200);
+            }
         };
 
         window.updateCartQty = (productId, delta) => {
@@ -1245,7 +1414,7 @@
                 catalogTiers[productId] = newTier;
                 if (newTier === 'custom' && !catalogCustomPrices[productId]) {
                     const product = products.find(p => p.id === productId);
-                    catalogCustomPrices[productId] = product.harga.eceran || 0;
+                    if(product) catalogCustomPrices[productId] = product.harga.eceran || 0;
                 }
                 renderProducts(); 
             }
@@ -1268,32 +1437,32 @@
             renderProducts();
         };
 
-        // Event Listeners
-        elSearch.addEventListener('input', (e) => {
+        // Event Listeners Aman menggunakan ID Checker
+        document.getElementById('input-search')?.addEventListener('input', (e) => {
             searchTerm = e.target.value;
             currentPage = 1;
             renderProducts();
         });
 
-        elFilterKategori.addEventListener('input', (e) => {
+        document.getElementById('filter-kategori')?.addEventListener('input', (e) => {
             selectedCategory = e.target.value;
             currentPage = 1;
             renderProducts();
         });
 
-        elFilterMerk.addEventListener('input', (e) => {
+        document.getElementById('filter-merk')?.addEventListener('input', (e) => {
             selectedBrand = e.target.value;
             currentPage = 1;
             renderProducts();
         });
 
-        elSelectItems.addEventListener('change', (e) => {
+        document.getElementById('select-items-per-page')?.addEventListener('change', (e) => {
             itemsPerPage = Number(e.target.value);
             currentPage = 1;
             renderProducts();
         });
 
-        elBtnPrev.addEventListener('click', () => {
+        document.getElementById('btn-prev-page')?.addEventListener('click', () => {
             if (currentPage > 1) {
                 currentPage--;
                 renderProducts();
@@ -1301,7 +1470,7 @@
             }
         });
 
-        elBtnNext.addEventListener('click', () => {
+        document.getElementById('btn-next-page')?.addEventListener('click', () => {
             const totalPages = Math.ceil(getFilteredProducts().length / itemsPerPage);
             if (currentPage < totalPages) {
                 currentPage++;
@@ -1310,39 +1479,47 @@
             }
         });
 
-        // Checkout & Modals
-        elBtnCheckout.addEventListener('click', () => {
-            const custName = document.getElementById('input-customer-name').value.trim();
-            const custPhone = document.getElementById('input-customer-phone').value.trim();
-            const custNote = document.getElementById('input-customer-note').value.trim();
+        document.getElementById('btn-checkout')?.addEventListener('click', () => {
+            const custName = document.getElementById('input-customer-name')?.value.trim() || '';
+            const custPhone = document.getElementById('input-customer-phone')?.value.trim() || '';
+            const custNote = document.getElementById('input-customer-note')?.value.trim() || '';
 
             if (!custName) {
                 const inputName = document.getElementById('input-customer-name');
-                inputName.classList.add('ring-2', 'ring-red-400', 'border-red-400');
-                inputName.focus();
-                setTimeout(() => inputName.classList.remove('ring-2', 'ring-red-400', 'border-red-400'), 2000);
+                if(inputName) {
+                    inputName.classList.add('ring-2', 'ring-red-400', 'border-red-400');
+                    inputName.focus();
+                    setTimeout(() => inputName.classList.remove('ring-2', 'ring-red-400', 'border-red-400'), 2000);
+                }
                 showToast("Mohon isi Nama Customer terlebih dahulu!", "error");
                 return;
             }
 
             // Populate Modal
-            document.getElementById('modal-customer-name').innerText = custName;
-            if (custPhone) {
-                document.getElementById('modal-customer-phone').innerText = custPhone;
-                document.getElementById('modal-customer-phone-container').classList.remove('hidden');
-            } else {
-                document.getElementById('modal-customer-phone-container').classList.add('hidden');
+            const modalCustName = document.getElementById('modal-customer-name');
+            if(modalCustName) modalCustName.innerText = custName;
+            
+            const modalCustPhone = document.getElementById('modal-customer-phone');
+            const modalCustPhoneContainer = document.getElementById('modal-customer-phone-container');
+            if (custPhone && modalCustPhone && modalCustPhoneContainer) {
+                modalCustPhone.innerText = custPhone;
+                modalCustPhoneContainer.classList.remove('hidden');
+            } else if(modalCustPhoneContainer) {
+                modalCustPhoneContainer.classList.add('hidden');
             }
 
-            if (custNote) {
-                document.getElementById('modal-customer-note').innerText = custNote;
-                document.getElementById('modal-customer-note-container').classList.remove('hidden');
-            } else {
-                document.getElementById('modal-customer-note-container').classList.add('hidden');
+            const modalCustNote = document.getElementById('modal-customer-note');
+            const modalCustNoteContainer = document.getElementById('modal-customer-note-container');
+            if (custNote && modalCustNote && modalCustNoteContainer) {
+                modalCustNote.innerText = custNote;
+                modalCustNoteContainer.classList.remove('hidden');
+            } else if (modalCustNoteContainer) {
+                modalCustNoteContainer.classList.add('hidden');
             }
 
             const cartTotal = cart.reduce((sum, item) => sum + (getItemPrice(item) * item.qty), 0);
-            document.getElementById('modal-grand-total').innerText = formatRupiah(cartTotal);
+            const modalGrandTotal = document.getElementById('modal-grand-total');
+            if(modalGrandTotal) modalGrandTotal.innerText = formatRupiah(cartTotal);
 
             const orderListHTML = cart.map((item, idx) => `
                 <div class="flex justify-between items-start text-sm ${idx !== cart.length -1 ? 'border-b border-gray-200/60 pb-2 mb-2' : ''}">
@@ -1356,37 +1533,43 @@
                     </div>
                 </div>
             `).join('');
-            document.getElementById('modal-order-list').innerHTML = orderListHTML;
+            
+            const modalOrderList = document.getElementById('modal-order-list');
+            if(modalOrderList) modalOrderList.innerHTML = orderListHTML;
 
             // Show modal with animation
-            elModal.classList.remove('hidden');
-            elModal.classList.add('flex');
-            
-            // Trigger reflow for animation
-            void elModal.offsetWidth;
-            
-            elModal.classList.remove('opacity-0');
-            elModalContent.classList.remove('scale-95');
-            elModalContent.classList.add('scale-100');
+            const elModal = document.getElementById('checkout-modal');
+            const elModalContent = document.getElementById('checkout-modal-content');
+            if(elModal && elModalContent) {
+                elModal.classList.remove('hidden');
+                elModal.classList.add('flex');
+                void elModal.offsetWidth;
+                elModal.classList.remove('opacity-0');
+                elModalContent.classList.remove('scale-95');
+                elModalContent.classList.add('scale-100');
+            }
         });
 
         window.closeCheckoutModal = () => {
-            elModal.classList.add('opacity-0');
-            elModalContent.classList.remove('scale-100');
-            elModalContent.classList.add('scale-95');
-            
-            setTimeout(() => {
-                elModal.classList.add('hidden');
-                elModal.classList.remove('flex');
-            }, 300); // Wait for transition
+            const elModal = document.getElementById('checkout-modal');
+            const elModalContent = document.getElementById('checkout-modal-content');
+            if(elModal && elModalContent) {
+                elModal.classList.add('opacity-0');
+                elModalContent.classList.remove('scale-100');
+                elModalContent.classList.add('scale-95');
+                setTimeout(() => {
+                    elModal.classList.add('hidden');
+                    elModal.classList.remove('flex');
+                }, 300); // Wait for transition
+            }
         };
 
         // History & Save Logics
         window.saveToHistory = (isDraft = false) => {
             if (cart.length === 0) return;
-            const custName = document.getElementById('input-customer-name').value.trim() || 'Tanpa Nama';
-            const custPhone = document.getElementById('input-customer-phone').value.trim();
-            const custNote = document.getElementById('input-customer-note').value.trim();
+            const custName = document.getElementById('input-customer-name')?.value.trim() || 'Tanpa Nama';
+            const custPhone = document.getElementById('input-customer-phone')?.value.trim() || '';
+            const custNote = document.getElementById('input-customer-note')?.value.trim() || '';
             const cartTotal = cart.reduce((sum, item) => sum + (getItemPrice(item) * item.qty), 0);
             
             const historyData = getHistory();
@@ -1413,30 +1596,36 @@
             renderHistory();
             const modal = document.getElementById('history-modal');
             const content = document.getElementById('history-modal-content');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            void modal.offsetWidth; 
-            modal.classList.remove('opacity-0');
-            content.classList.remove('scale-95');
-            content.classList.add('scale-100');
+            if(modal && content) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                void modal.offsetWidth; 
+                modal.classList.remove('opacity-0');
+                content.classList.remove('scale-95');
+                content.classList.add('scale-100');
+            }
         };
 
         window.closeHistoryModal = () => {
             const modal = document.getElementById('history-modal');
             const content = document.getElementById('history-modal-content');
-            modal.classList.add('opacity-0');
-            content.classList.remove('scale-100');
-            content.classList.add('scale-95');
-            setTimeout(() => {
-                modal.classList.add('hidden');
-                modal.classList.remove('flex');
-            }, 300);
+            if(modal && content) {
+                modal.classList.add('opacity-0');
+                content.classList.remove('scale-100');
+                content.classList.add('scale-95');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                }, 300);
+            }
         };
 
         // Scanner Logics
         window.openScannerModal = () => {
             const modal = document.getElementById('scanner-modal');
             const content = document.getElementById('scanner-modal-content');
+            if(!modal || !content) return;
+
             modal.classList.remove('hidden');
             modal.classList.add('flex');
             void modal.offsetWidth; 
@@ -1468,13 +1657,15 @@
 
             const modal = document.getElementById('scanner-modal');
             const content = document.getElementById('scanner-modal-content');
-            modal.classList.add('opacity-0');
-            content.classList.remove('scale-100');
-            content.classList.add('scale-95');
-            setTimeout(() => {
-                modal.classList.add('hidden');
-                modal.classList.remove('flex');
-            }, 300);
+            if(modal && content) {
+                modal.classList.add('opacity-0');
+                content.classList.remove('scale-100');
+                content.classList.add('scale-95');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                }, 300);
+            }
         };
 
         const onScanSuccess = (decodedText, decodedResult) => {
@@ -1484,7 +1675,7 @@
             
             // Masukkan hasil scan ke input pencarian
             const searchInput = document.getElementById('input-search');
-            searchInput.value = decodedText;
+            if(searchInput) searchInput.value = decodedText;
             
             // Trigger pencarian
             searchTerm = decodedText;
@@ -1499,7 +1690,8 @@
         const renderHistory = () => {
             const historyData = getHistory();
             const elHistoryList = document.getElementById('history-list');
-            
+            if(!elHistoryList) return;
+
             if (historyData.length === 0) {
                 elHistoryList.innerHTML = `
                     <div class="text-center py-10 text-gray-400 flex flex-col items-center justify-center">
@@ -1549,9 +1741,14 @@
             const historyData = getHistory();
             const item = historyData.find(h => h.id === id);
             if (item) {
-                document.getElementById('input-customer-name').value = item.customerName !== 'Tanpa Nama' ? item.customerName : '';
-                document.getElementById('input-customer-phone').value = item.customerPhone || '';
-                document.getElementById('input-customer-note').value = item.customerNote || '';
+                const inputName = document.getElementById('input-customer-name');
+                const inputPhone = document.getElementById('input-customer-phone');
+                const inputNote = document.getElementById('input-customer-note');
+                
+                if(inputName) inputName.value = item.customerName !== 'Tanpa Nama' ? item.customerName : '';
+                if(inputPhone) inputPhone.value = item.customerPhone || '';
+                if(inputNote) inputNote.value = item.customerNote || '';
+                
                 cart = item.cart;
                 renderCart();
                 closeHistoryModal();
@@ -1569,7 +1766,7 @@
         };
 
         window.handleDownloadExcel = () => {
-            const custName = document.getElementById('input-customer-name').value.trim();
+            const custName = document.getElementById('input-customer-name')?.value.trim() || 'Pelanggan';
             let csvContent = "SKU,Nama Produk,Unit,Qty,Harga,Total,Catatan\n";
             
             cart.forEach(item => {
@@ -1591,8 +1788,8 @@
         };
 
         window.handleCopyAndSave = () => {
-            const custName = document.getElementById('input-customer-name').value.trim();
-            const custNote = document.getElementById('input-customer-note').value.trim();
+            const custName = document.getElementById('input-customer-name')?.value.trim() || 'Pelanggan';
+            const custNote = document.getElementById('input-customer-note')?.value.trim() || '';
             const cartTotal = cart.reduce((sum, item) => sum + (getItemPrice(item) * item.qty), 0);
             const totalSKU = cart.length;
 
@@ -1632,17 +1829,19 @@
             try {
                 document.execCommand('copy');
                 const btn = document.getElementById('btn-copy-save');
-                const originalHTML = btn.innerHTML;
-                btn.innerHTML = `<i data-lucide="check-circle" class="w-5 h-5"></i><span class="text-xs">Tersalin & Tersimpan</span>`;
-                btn.classList.replace('bg-[#25D366]', 'bg-[#1DA851]');
-                lucide.createIcons();
-                
-                setTimeout(() => {
-                    btn.innerHTML = originalHTML;
-                    btn.classList.replace('bg-[#1DA851]', 'bg-[#25D366]');
+                if(btn) {
+                    const originalHTML = btn.innerHTML;
+                    btn.innerHTML = `<i data-lucide="check-circle" class="w-5 h-5"></i><span class="text-xs">Tersalin & Tersimpan</span>`;
+                    btn.classList.replace('bg-[#25D366]', 'bg-[#1DA851]');
                     lucide.createIcons();
-                    closeCheckoutModal();
-                }, 2000);
+                    
+                    setTimeout(() => {
+                        btn.innerHTML = originalHTML;
+                        btn.classList.replace('bg-[#1DA851]', 'bg-[#25D366]');
+                        lucide.createIcons();
+                        closeCheckoutModal();
+                    }, 2000);
+                }
             } catch (err) {
                 console.error('Gagal menyalin:', err);
                 showToast("Gagal menyalin teks pesanan.", "error");
@@ -1658,7 +1857,7 @@
             }
         </style>`);
 
-        // Initialize
+        // Initialize aplikasi
         fetchData();
 
     </script>

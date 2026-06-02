@@ -241,10 +241,15 @@
             <!-- Search & Product List -->
             <div class="bg-white p-5 lg:p-6 rounded-2xl shadow-sm border border-gray-100 flex-1">
                 <div class="flex flex-col mb-6 gap-4">
-                    <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
-                        <div class="bg-primary-100 text-primary-600 p-1.5 rounded-lg"><i data-lucide="package" class="w-5 h-5"></i></div>
-                        Daftar Produk
-                    </h2>
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                            <div class="bg-primary-100 text-primary-600 p-1.5 rounded-lg"><i data-lucide="package" class="w-5 h-5"></i></div>
+                            Daftar Produk
+                        </h2>
+                        <button onclick="refreshData(this)" class="active-tap flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-primary-600 bg-primary-50 hover:bg-primary-100 rounded-lg border border-primary-200 transition-colors shadow-sm" title="Muat ulang data dari Spreadsheet">
+                            <i data-lucide="refresh-cw" class="w-4 h-4"></i> <span class="hidden sm:inline">Refresh Data</span>
+                        </button>
+                    </div>
                     
                     <div class="flex flex-col xl:flex-row gap-3 items-stretch xl:items-center">
                         <div class="flex items-center gap-2 flex-1">
@@ -960,99 +965,8 @@
                     }).filter(p => p !== null);
                 }
                 
-                // Matikan loading segera setelah produk utama selesai!
                 if(elLoading) elLoading.classList.add('hidden');
                 renderProducts();
-
-                // 2. Fetch Data Referensi (Kategori, Merk, dan Gambar) di Belakang Layar (Background)
-                Promise.all([
-                    fetch(REF_CSV_URL),
-                    fetch(IMG_CSV_URL)
-                ]).then(async ([refRes, imgRes]) => {
-                    if (refRes.ok && imgRes.ok) {
-                        const refText = await refRes.text();
-                        const imgText = await imgRes.text();
-
-                        const refParsed = parseCSV(refText);
-                        const imgParsed = parseCSV(imgText);
-
-                        const refMap = {};
-                        if (refParsed.length > 0) {
-                            const refHeaders = refParsed[0].map(h => h.toLowerCase().trim());
-                            const refSkuIdx = refHeaders.findIndex(h => h === 'sku' || h.includes('sku') || h.includes('kode'));
-                            for (let i = 1; i < refParsed.length; i++) {
-                                const row = refParsed[i];
-                                const sku = refSkuIdx !== -1 && row[refSkuIdx] ? row[refSkuIdx].toString().trim().toUpperCase() : (row[0] ? row[0].toString().trim().toUpperCase() : null);
-                                if (sku) {
-                                    refMap[sku] = {
-                                        kategori: row.length > 4 && row[4] ? row[4].trim() : '-',
-                                        merk: row.length > 6 && row[6] ? row[6].trim() : '-'
-                                    };
-                                }
-                            }
-                        }
-
-                        const imgMap = {};
-                        if (imgParsed.length > 0) {
-                            for (let i = 1; i < imgParsed.length; i++) {
-                                const row = imgParsed[i];
-                                const sku = row[0] ? row[0].toString().trim().toUpperCase() : null;
-                                if (sku) {
-                                    let imageVal = row.length > 17 && row[17] ? row[17].toString().trim() : null;
-                                    
-                                    // PINTAR: Cari ID di seluruh baris jika tidak ada di kolom ke-18
-                                    if (!imageVal || imageVal === '-') {
-                                        const match = row.join(' ').match(/[-\w]{25,}/);
-                                        if (match) imageVal = match[0];
-                                    } else {
-                                        const match = imageVal.match(/[-\w]{25,}/);
-                                        if (match) imageVal = match[0];
-                                    }
-
-                                    if (imageVal) imgMap[sku] = imageVal;
-                                }
-                            }
-                        }
-
-                        // Menggabungkan data background ke state produk utama
-                        const categoriesSet = new Set();
-                        const brandsSet = new Set();
-
-                        products.forEach(p => {
-                            const skuKey = p.sku.toUpperCase();
-                            if (refMap[skuKey]) {
-                                p.kategori = refMap[skuKey].kategori;
-                                p.merk = refMap[skuKey].merk;
-                            }
-                            if (imgMap[skuKey]) {
-                                p.imageId = imgMap[skuKey];
-                            }
-                            
-                            if (p.kategori && p.kategori !== '-') categoriesSet.add(p.kategori);
-                            if (p.merk && p.merk !== '-') brandsSet.add(p.merk);
-                        });
-
-                        availableCategories = Array.from(categoriesSet).sort();
-                        availableBrands = Array.from(brandsSet).sort();
-                        
-                        const listKategori = document.getElementById('list-kategori');
-                        const listMerk = document.getElementById('list-merk');
-
-                        if (availableCategories.length > 0 && listKategori) {
-                            listKategori.innerHTML = availableCategories.map(c => `<option value="${c}">`).join('');
-                            document.getElementById('container-filter-kategori').classList.remove('hidden');
-                        }
-
-                        if (availableBrands.length > 0 && listMerk) {
-                            listMerk.innerHTML = availableBrands.map(m => `<option value="${m}">`).join('');
-                            document.getElementById('container-filter-merk').classList.remove('hidden');
-                        }
-
-                        // Render ulang secara diam-diam untuk menampilkan badge Kategori & Merk
-                        renderProducts();
-                    }
-                }).catch(err => console.log("Gagal memuat data referensi di background", err));
-
             } catch (err) {
                 if(elLoading) elLoading.classList.add('hidden');
                 if(elErrorMsg) elErrorMsg.innerText = err.message;
@@ -1062,6 +976,22 @@
                 }
             }
         }
+
+        // Fungsi Refresh Manual
+        window.refreshData = async (btn) => {
+            const icon = btn.querySelector('i');
+            if (icon) icon.classList.add('animate-spin');
+            
+            // Tampilkan kembali loading overlay
+            const elLoading = document.getElementById('loading-overlay');
+            if(elLoading) elLoading.classList.remove('hidden');
+            
+            // Tarik ulang data
+            await fetchData();
+            
+            if (icon) icon.classList.remove('animate-spin');
+            showToast("Data produk berhasil diperbarui!", "success");
+        };
 
         // Getter for Filtered & Paginated Products
         function getFilteredProducts() {

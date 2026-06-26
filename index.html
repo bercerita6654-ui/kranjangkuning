@@ -120,7 +120,7 @@
         input[type=number] {
             -moz-appearance: textfield;
         }
-        
+
         /* Animasi putar pelan untuk refresh button */
         .spin-slow {
             animation: spin 1s linear infinite;
@@ -216,88 +216,145 @@
 
     <main class="max-w-7xl mx-auto px-4 py-6 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 relative">
         
-        <!-- Kolom Kiri: Produk & Info Customer -->
+        <!-- Kolom Kiri: Produk & Katalog -->
         <div class="lg:col-span-7 xl:col-span-8 flex flex-col gap-6">
             
-            <!-- Customer Info Card -->
-            <div class="bg-white p-5 lg:p-6 rounded-2xl shadow-sm border border-gray-100">
-                <h2 class="text-lg font-bold mb-5 flex items-center gap-2 text-gray-800">
-                    <div class="bg-primary-100 text-primary-600 p-1.5 rounded-lg"><i data-lucide="user" class="w-5 h-5"></i></div>
-                    Data Pelanggan
-                </h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-600 mb-1.5">Nama Customer <span class="text-red-500">*</span></label>
-                        <div class="relative group">
-                            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-400 group-focus-within:text-primary-500 transition-colors"><i data-lucide="user" class="w-4.5 h-4.5"></i></span>
-                            <input type="text" id="input-customer-name" class="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all text-sm font-medium" placeholder="Nama Lengkap Pemesan">
+            <!-- TAB SWITCHER -->
+            <div class="flex gap-2 bg-white p-2 rounded-2xl shadow-sm border border-gray-100 w-fit">
+                <button id="btn-tab-shop" onclick="switchTab('shop')" class="flex items-center gap-2 px-4 py-2 rounded-xl font-bold transition-all bg-primary-400 text-primary-900 shadow-sm active-tap">
+                    <i data-lucide="package" class="w-4 h-4"></i> Belanja
+                </button>
+                <button id="btn-tab-catalog" onclick="switchTab('catalog')" class="flex items-center gap-2 px-4 py-2 rounded-xl font-bold transition-all text-gray-500 hover:bg-gray-50 active-tap">
+                    <i data-lucide="book-open" class="w-4 h-4"></i> Katalog Gambar
+                </button>
+            </div>
+
+            <!-- TAMPILAN BELANJA -->
+            <div id="shop-view" class="flex flex-col gap-6 animate-[fadeIn_0.2s_ease-out]">
+                <!-- Customer Info Card -->
+                <div class="bg-white p-5 lg:p-6 rounded-2xl shadow-sm border border-gray-100">
+                    <h2 class="text-lg font-bold mb-5 flex items-center gap-2 text-gray-800">
+                        <div class="bg-primary-100 text-primary-600 p-1.5 rounded-lg"><i data-lucide="user" class="w-5 h-5"></i></div>
+                        Data Pelanggan
+                    </h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-600 mb-1.5">Nama Customer <span class="text-red-500">*</span></label>
+                            <div class="relative group">
+                                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-400 group-focus-within:text-primary-500 transition-colors"><i data-lucide="user" class="w-4.5 h-4.5"></i></span>
+                                <input type="text" id="input-customer-name" class="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all text-sm font-medium" placeholder="Nama Lengkap Pemesan">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-600 mb-1.5">No. WhatsApp <span class="text-gray-400 font-normal">(Opsional)</span></label>
+                            <div class="relative group">
+                                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-400 group-focus-within:text-primary-500 transition-colors"><i data-lucide="phone" class="w-4.5 h-4.5"></i></span>
+                                <input type="tel" id="input-customer-phone" class="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all text-sm font-medium" placeholder="Contoh: 08123456789">
+                            </div>
                         </div>
                     </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-600 mb-1.5">No. WhatsApp <span class="text-gray-400 font-normal">(Opsional)</span></label>
-                        <div class="relative group">
-                            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-400 group-focus-within:text-primary-500 transition-colors"><i data-lucide="phone" class="w-4.5 h-4.5"></i></span>
-                            <input type="tel" id="input-customer-phone" class="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all text-sm font-medium" placeholder="Contoh: 08123456789">
+                </div>
+
+                <!-- Search & Product List -->
+                <div class="bg-white p-5 lg:p-6 rounded-2xl shadow-sm border border-gray-100 flex-1">
+                    <div class="flex flex-col mb-6 gap-4">
+                        <div class="flex items-center justify-between">
+                            <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                                <div class="bg-primary-100 text-primary-600 p-1.5 rounded-lg"><i data-lucide="package" class="w-5 h-5"></i></div>
+                                Daftar Produk
+                            </h2>
+                            <!-- Tombol Refresh Data -->
+                            <button onclick="refreshData()" class="flex items-center gap-1.5 text-xs font-bold text-primary-600 bg-primary-50 hover:bg-primary-100 px-3 py-1.5 rounded-lg transition-colors border border-primary-200 shadow-sm active-tap">
+                                <i id="icon-refresh" data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> <span class="hidden sm:inline">Refresh Data</span>
+                            </button>
+                        </div>
+                        
+                        <div class="flex flex-col xl:flex-row gap-3 items-stretch xl:items-center">
+                            <div class="flex items-center gap-2 flex-1">
+                                <div class="relative flex-1">
+                                    <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-400"><i data-lucide="search" class="w-4 h-4"></i></span>
+                                    <input type="text" id="input-search" class="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none bg-gray-50/50 text-sm transition-all" placeholder="Cari nama produk / SKU acak...">
+                                </div>
+                                <button onclick="openScannerModal()" class="active-tap p-2.5 bg-primary-100 text-primary-600 hover:bg-primary-200 rounded-xl transition-colors flex-shrink-0 shadow-sm border border-primary-200 h-full aspect-square flex items-center justify-center" title="Scan Barcode">
+                                    <i data-lucide="scan-line" class="w-5 h-5"></i>
+                                </button>
+                            </div>
+                            
+                            <div class="flex gap-2 flex-col sm:flex-row w-full xl:w-auto">
+                                <!-- Global Price Dropdown -->
+                                <select id="global-price-tier" onchange="updateGlobalPriceTier(this.value)" class="w-full sm:w-auto text-sm border border-gray-200 rounded-xl py-2.5 px-3 bg-white text-primary-700 font-bold focus:outline-none focus:ring-2 focus:ring-primary-400 transition-colors cursor-pointer outline-none shadow-sm flex-shrink-0">
+                                    <option value="eceran">Semua: Eceran</option>
+                                    <option value="grosir">Semua: Grosir</option>
+                                    <option value="partai">Semua: Partai</option>
+                                </select>
+
+                                <div class="relative w-full sm:w-36 hidden flex-shrink-0" id="container-filter-kategori">
+                                    <input type="text" id="filter-kategori" list="list-kategori" class="w-full text-sm border border-gray-200 rounded-xl py-2.5 px-3 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-400 transition-colors placeholder-gray-400 outline-none" placeholder="Semua Kategori">
+                                    <datalist id="list-kategori"></datalist>
+                                </div>
+                                <div class="relative w-full sm:w-36 hidden flex-shrink-0" id="container-filter-merk">
+                                    <input type="text" id="filter-merk" list="list-merk" class="w-full text-sm border border-gray-200 rounded-xl py-2.5 px-3 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-400 transition-colors placeholder-gray-400 outline-none" placeholder="Semua Merk">
+                                    <datalist id="list-merk"></datalist>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Product Grid - Diubah jadi baris/list -->
+                    <div id="product-list" class="flex flex-col gap-4">
+                        <!-- Produk akan dirender di sini via JS -->
+                    </div>
+
+                    <!-- Pagination Controls -->
+                    <div id="pagination-controls" class="mt-8 border-t border-gray-100 pt-5 flex flex-col sm:flex-row justify-between items-center gap-4 hidden">
+                        <div class="flex items-center gap-3">
+                            <span class="text-sm font-medium text-gray-500">Tampilkan:</span>
+                            <select id="select-items-per-page" class="border border-gray-200 rounded-lg py-2 px-3 text-sm focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none bg-white font-medium shadow-sm">
+                                <option value="20">20 / Hal</option>
+                                <option value="50">50 / Hal</option>
+                                <option value="100">100 / Hal</option>
+                            </select>
+                        </div>
+                        
+                        <div class="flex items-center gap-2 bg-gray-50 p-1.5 rounded-xl border border-gray-100">
+                            <button id="btn-prev-page" class="p-2 rounded-lg text-gray-600 disabled:opacity-30 hover:bg-white hover:shadow-sm transition-all active-tap">
+                                <i data-lucide="chevron-left" class="w-5 h-5"></i>
+                            </button>
+                            <span class="text-sm font-bold text-gray-700 px-3" id="pagination-info">
+                                1 / 1
+                            </span>
+                            <button id="btn-next-page" class="p-2 rounded-lg text-gray-600 disabled:opacity-30 hover:bg-white hover:shadow-sm transition-all active-tap">
+                                <i data-lucide="chevron-right" class="w-5 h-5"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Search & Product List -->
-            <div class="bg-white p-5 lg:p-6 rounded-2xl shadow-sm border border-gray-100 flex-1">
-                <div class="flex flex-col mb-6 gap-4">
-                    <div class="flex items-center justify-between">
-                        <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
-                            <div class="bg-primary-100 text-primary-600 p-1.5 rounded-lg"><i data-lucide="package" class="w-5 h-5"></i></div>
-                            Daftar Produk
+            <!-- TAMPILAN KATALOG GAMBAR -->
+            <div id="catalog-view" class="hidden flex-col gap-6 bg-white p-5 lg:p-6 rounded-2xl shadow-sm border border-gray-100 animate-[fadeIn_0.2s_ease-out]">
+                <div class="flex flex-col sm:flex-row justify-between items-center mb-1 gap-4 border-b border-gray-100 pb-5">
+                    <div class="flex flex-col">
+                        <h2 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+                            <div class="bg-blue-100 text-blue-600 p-1.5 rounded-lg"><i data-lucide="book-open" class="w-5 h-5"></i></div>
+                            Katalog Gambar
                         </h2>
-                        <!-- Tombol Refresh Data -->
-                        <button onclick="refreshData()" class="flex items-center gap-1.5 text-xs font-bold text-primary-600 bg-primary-50 hover:bg-primary-100 px-3 py-1.5 rounded-lg transition-colors border border-primary-200 shadow-sm active-tap">
-                            <i id="icon-refresh" data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> <span class="hidden sm:inline">Refresh Data</span>
-                        </button>
+                        <p class="text-sm text-gray-500 mt-1">Bagikan foto katalog dengan mudah ke WhatsApp pelanggan.</p>
                     </div>
-                    
-                    <div class="flex flex-col xl:flex-row gap-3 items-stretch xl:items-center">
-                        <div class="flex items-center gap-2 flex-1">
-                            <div class="relative flex-1">
-                                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-400"><i data-lucide="search" class="w-4 h-4"></i></span>
-                                <input type="text" id="input-search" class="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none bg-gray-50/50 text-sm transition-all" placeholder="Cari nama produk / SKU acak...">
-                            </div>
-                            <button onclick="openScannerModal()" class="active-tap p-2.5 bg-primary-100 text-primary-600 hover:bg-primary-200 rounded-xl transition-colors flex-shrink-0 shadow-sm border border-primary-200 h-full aspect-square flex items-center justify-center" title="Scan Barcode">
-                                <i data-lucide="scan-line" class="w-5 h-5"></i>
-                            </button>
-                        </div>
-                        
-                        <div class="flex gap-2 flex-col sm:flex-row w-full xl:w-auto">
-                            <!-- Global Price Dropdown -->
-                            <select id="global-price-tier" onchange="updateGlobalPriceTier(this.value)" class="w-full sm:w-auto text-sm border border-gray-200 rounded-xl py-2.5 px-3 bg-white text-primary-700 font-bold focus:outline-none focus:ring-2 focus:ring-primary-400 transition-colors cursor-pointer outline-none shadow-sm flex-shrink-0">
-                                <option value="eceran">Semua: Eceran</option>
-                                <option value="grosir">Semua: Grosir</option>
-                                <option value="partai">Semua: Partai</option>
-                            </select>
-
-                            <div class="relative w-full sm:w-36 hidden flex-shrink-0" id="container-filter-kategori">
-                                <input type="text" id="filter-kategori" list="list-kategori" class="w-full text-sm border border-gray-200 rounded-xl py-2.5 px-3 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-400 transition-colors placeholder-gray-400 outline-none" placeholder="Semua Kategori">
-                                <datalist id="list-kategori"></datalist>
-                            </div>
-                            <div class="relative w-full sm:w-36 hidden flex-shrink-0" id="container-filter-merk">
-                                <input type="text" id="filter-merk" list="list-merk" class="w-full text-sm border border-gray-200 rounded-xl py-2.5 px-3 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-400 transition-colors placeholder-gray-400 outline-none" placeholder="Semua Merk">
-                                <datalist id="list-merk"></datalist>
-                            </div>
-                        </div>
+                    <div class="relative w-full sm:w-72">
+                      <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-400"><i data-lucide="search" class="w-4 h-4"></i></span>
+                      <input type="text" id="input-search-catalog" class="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none bg-gray-50/50 text-sm transition-all" placeholder="Cari katalog berdasar SKU/Nama acak...">
                     </div>
                 </div>
-
-                <!-- Product Grid - Diubah jadi baris/list -->
-                <div id="product-list" class="flex flex-col gap-4">
-                    <!-- Produk akan dirender di sini via JS -->
+                
+                <div id="catalog-list" class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-4">
+                    <!-- Katalog akan dirender via JS -->
                 </div>
-
-                <!-- Pagination Controls -->
-                <div id="pagination-controls" class="mt-8 border-t border-gray-100 pt-5 flex flex-col sm:flex-row justify-between items-center gap-4 hidden">
+                
+                <div id="catalog-pagination-controls" class="mt-4 border-t border-gray-100 pt-5 flex flex-col sm:flex-row justify-between items-center gap-4 hidden">
                     <div class="flex items-center gap-3">
                         <span class="text-sm font-medium text-gray-500">Tampilkan:</span>
-                        <select id="select-items-per-page" class="border border-gray-200 rounded-lg py-2 px-3 text-sm focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none bg-white font-medium shadow-sm">
+                        <select id="catalog-select-items-per-page" class="border border-gray-200 rounded-lg py-2 px-3 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none bg-white font-medium shadow-sm">
                             <option value="20">20 / Hal</option>
                             <option value="50">50 / Hal</option>
                             <option value="100">100 / Hal</option>
@@ -305,19 +362,19 @@
                     </div>
                     
                     <div class="flex items-center gap-2 bg-gray-50 p-1.5 rounded-xl border border-gray-100">
-                        <button id="btn-prev-page" class="p-2 rounded-lg text-gray-600 disabled:opacity-30 hover:bg-white hover:shadow-sm transition-all active-tap">
+                        <button id="catalog-btn-prev" class="p-2 rounded-lg text-gray-600 disabled:opacity-30 hover:bg-white hover:shadow-sm transition-all active-tap">
                             <i data-lucide="chevron-left" class="w-5 h-5"></i>
                         </button>
-                        <span class="text-sm font-bold text-gray-700 px-3" id="pagination-info">
+                        <span class="text-sm font-bold text-gray-700 px-3" id="catalog-pagination-info">
                             1 / 1
                         </span>
-                        <button id="btn-next-page" class="p-2 rounded-lg text-gray-600 disabled:opacity-30 hover:bg-white hover:shadow-sm transition-all active-tap">
+                        <button id="catalog-btn-next" class="p-2 rounded-lg text-gray-600 disabled:opacity-30 hover:bg-white hover:shadow-sm transition-all active-tap">
                             <i data-lucide="chevron-right" class="w-5 h-5"></i>
                         </button>
                     </div>
                 </div>
-
             </div>
+
         </div>
 
         <!-- Overlay Mobile Cart (Disesuaikan z-index lg:z-auto untuk PC) -->
@@ -549,12 +606,18 @@
         lucide.createIcons();
 
         // Variabel State Global
+        let activeTab = 'shop';
         let products = [];
         let cart = [];
+        
         let searchTerm = '';
         let selectedCategory = '';
         let selectedBrand = '';
         let currentPage = 1;
+        
+        let searchTermCatalog = '';
+        let currentPageCatalog = 1;
+
         let itemsPerPage = 20;
         let html5QrCode; // Variabel global untuk scanner
 
@@ -568,11 +631,38 @@
 
         // SETUP URL CSV
         const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTCxz1GPm7QU9IS1yBiSjvIdNTLUsvvplOCyT_R3XH4O-LuVbHoY_bXn1LTH5lpnlolJ29BhUgEdnFm/pub?gid=240870130&single=true&output=csv';
+        // REF CSV memiliki Kategori (idx 4), Merk (idx 6), Gambar Story (idx 19), Last Update (idx 20), Foto Produk (idx 21)
         const REF_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTCxz1GPm7QU9IS1yBiSjvIdNTLUsvvplOCyT_R3XH4O-LuVbHoY_bXn1LTH5lpnlolJ29BhUgEdnFm/pub?gid=1564332470&single=true&output=csv';
-        // URL CSV GAMBAR (Kolom 1: SKU, Kolom 18/Index 17: ID Gambar)
-        const IMG_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSgE2FWnQADRb6KEpjFd-Z3kC435S5dGJMtuiBkuDSqkkWfLQuXgM5YLohuZX9yHx_DG3GYZ54tGWXl/pub?gid=0&single=true&output=csv';
         
         const STORAGE_KEY = 'keranjangKuning_history';
+
+        // Fungsi Switch Tab View
+        window.switchTab = (tab) => {
+            activeTab = tab;
+            const btnShop = document.getElementById('btn-tab-shop');
+            const btnCatalog = document.getElementById('btn-tab-catalog');
+            const viewShop = document.getElementById('shop-view');
+            const viewCatalog = document.getElementById('catalog-view');
+
+            if(tab === 'shop') {
+                btnShop.className = 'flex items-center gap-2 px-4 py-2 rounded-xl font-bold transition-all bg-primary-400 text-primary-900 shadow-sm active-tap';
+                btnCatalog.className = 'flex items-center gap-2 px-4 py-2 rounded-xl font-bold transition-all text-gray-500 hover:bg-gray-50 active-tap';
+                
+                viewShop.classList.remove('hidden');
+                viewShop.classList.add('flex');
+                viewCatalog.classList.remove('flex');
+                viewCatalog.classList.add('hidden');
+            } else {
+                btnCatalog.className = 'flex items-center gap-2 px-4 py-2 rounded-xl font-bold transition-all bg-primary-400 text-primary-900 shadow-sm active-tap';
+                btnShop.className = 'flex items-center gap-2 px-4 py-2 rounded-xl font-bold transition-all text-gray-500 hover:bg-gray-50 active-tap';
+                
+                viewCatalog.classList.remove('hidden');
+                viewCatalog.classList.add('flex');
+                viewShop.classList.remove('flex');
+                viewShop.classList.add('hidden');
+                renderCatalog();
+            }
+        };
 
         // Fungsi Tema Dinamis
         window.toggleThemeMenu = () => {
@@ -780,13 +870,13 @@
         };
 
         // Fungsi untuk mengambil foto produk dari folder Google Drive berdasarkan ID File
-        const getProductImageUrl = (product) => {
-            if (product && product.imageId && product.imageId.trim() !== '' && product.imageId.trim() !== '-') {
+        const getProductImageUrl = (imageId, sku) => {
+            if (imageId && imageId.trim() !== '' && imageId.trim() !== '-') {
                 // Menggunakan endpoint lh3.googleusercontent.com yang paling stabil untuk gambar Google Drive
-                return `https://lh3.googleusercontent.com/d/${product.imageId.trim()}`;
+                return `https://lh3.googleusercontent.com/d/${imageId.trim()}`;
             }
-            // Jika ID Gambar kosong di CSV, kembalikan dummy placeholder estetik
-            return `https://placehold.co/600x600/f8fafc/94a3b8?text=${product ? product.sku : 'No+Image'}.png`;
+            // Jika ID Gambar kosong, kembalikan dummy placeholder estetik
+            return `https://placehold.co/600x600/f8fafc/94a3b8?text=${sku || 'No+Image'}.png`;
         };
 
         // UI Interactions
@@ -812,7 +902,7 @@
             }
         };
 
-        // Fungsi membuka Pop-Up Detil dan Foto Produk
+        // Fungsi membuka Pop-Up Detil dan Foto Produk (di TAB SHOP)
         window.openProductDetailModal = (productId) => {
             const product = products.find(p => p.id === productId);
             if (!product) return;
@@ -831,8 +921,8 @@
             if(imgEl && loaderEl) {
                 imgEl.classList.add('opacity-0');
                 loaderEl.classList.remove('hidden');
-                // Panggil gambar
-                imgEl.src = getProductImageUrl(product);
+                // Menggunakan Foto Produk (dari Kolom 22)
+                imgEl.src = getProductImageUrl(product.fotoProdukId, product.sku);
             }
 
             const btnAddCart = document.getElementById('modal-btn-add-cart');
@@ -917,7 +1007,7 @@
             lucide.createIcons();
         }
 
-        // Fungsi Load Utama dengan Lazy Loading untuk Kategori & Gambar
+        // Fungsi Load Utama dengan Lazy Loading untuk Referensi Gambar
         async function fetchData(isRefresh = false) {
             const elLoading = document.getElementById('loading-overlay');
             const elError = document.getElementById('error-overlay');
@@ -964,9 +1054,11 @@
                             id: skuValue !== '-' ? skuValue : `PROD-${index}`,
                             nama: colIdx.nama !== -1 ? row[colIdx.nama] : '-',
                             sku: skuValue,
-                            kategori: '-', // Akan diisi di background
-                            merk: '-',     // Akan diisi di background
-                            imageId: null, // Akan diisi di background
+                            kategori: '-', 
+                            merk: '-',     
+                            gambarStoryId: null, 
+                            lastUpdate: '-', 
+                            fotoProdukId: null, 
                             unit: colIdx.unit !== -1 ? row[colIdx.unit] : '-',
                             stok: {
                                 gudang: colIdx.stokGudang !== -1 ? parseInt(row[colIdx.stokGudang] || 0) : 0,
@@ -994,52 +1086,45 @@
                 }
                 renderProducts();
 
-                // 2. Fetch Data Referensi (Kategori, Merk, dan Gambar) di Belakang Layar
+                // 2. Fetch Data Referensi di Belakang Layar (Background)
                 Promise.all([
-                    fetch(REF_CSV_URL + "&t=" + new Date().getTime()),
-                    fetch(IMG_CSV_URL + "&t=" + new Date().getTime())
-                ]).then(async ([refRes, imgRes]) => {
-                    if (refRes.ok && imgRes.ok) {
+                    fetch(REF_CSV_URL + "&t=" + new Date().getTime())
+                ]).then(async ([refRes]) => {
+                    if (refRes.ok) {
                         const refText = await refRes.text();
-                        const imgText = await imgRes.text();
-
                         const refParsed = parseCSV(refText);
-                        const imgParsed = parseCSV(imgText);
 
                         const refMap = {};
                         if (refParsed.length > 0) {
                             const refHeaders = refParsed[0].map(h => h.toLowerCase().trim());
                             const refSkuIdx = refHeaders.findIndex(h => h === 'sku' || h.includes('sku') || h.includes('kode'));
+                            
+                            // Ekstrak referensi Idx. Asumsi default jika tidak ketemu teks di header:
+                            // Gambar Story = 19 (kolom 20), Last Update = 20 (kolom 21), Foto Produk = 21 (kolom 22)
+                            
                             for (let i = 1; i < refParsed.length; i++) {
                                 const row = refParsed[i];
                                 const sku = refSkuIdx !== -1 && row[refSkuIdx] ? row[refSkuIdx].toString().trim().toUpperCase() : (row[0] ? row[0].toString().trim().toUpperCase() : null);
+                                
                                 if (sku) {
+                                    let gambarStoryVal = row.length > 19 && row[19] ? row[19].toString().trim() : null;
+                                    let lastUpdateVal = row.length > 20 && row[20] ? row[20].toString().trim() : '-';
+                                    let fotoProdukVal = row.length > 21 && row[21] ? row[21].toString().trim() : null;
+                                    
+                                    // PINTAR: Filter ID Drive (25+ karakter alphanumeric/dash)
+                                    const extractId = (val) => {
+                                        if (!val || val === '-') return null;
+                                        const match = val.match(/[-\w]{25,}/);
+                                        return match ? match[0] : null;
+                                    };
+
                                     refMap[sku] = {
                                         kategori: row.length > 4 && row[4] ? row[4].trim() : '-',
-                                        merk: row.length > 6 && row[6] ? row[6].trim() : '-'
+                                        merk: row.length > 6 && row[6] ? row[6].trim() : '-',
+                                        gambarStoryId: extractId(gambarStoryVal),
+                                        lastUpdate: lastUpdateVal,
+                                        fotoProdukId: extractId(fotoProdukVal)
                                     };
-                                }
-                            }
-                        }
-
-                        const imgMap = {};
-                        if (imgParsed.length > 0) {
-                            for (let i = 1; i < imgParsed.length; i++) {
-                                const row = imgParsed[i];
-                                const sku = row[0] ? row[0].toString().trim().toUpperCase() : null;
-                                if (sku) {
-                                    let imageVal = row.length > 17 && row[17] ? row[17].toString().trim() : null;
-                                    
-                                    // PINTAR: Cari ID di seluruh baris jika tidak ada di kolom ke-18
-                                    if (!imageVal || imageVal === '-') {
-                                        const match = row.join(' ').match(/[-\w]{25,}/);
-                                        if (match) imageVal = match[0];
-                                    } else {
-                                        const match = imageVal.match(/[-\w]{25,}/);
-                                        if (match) imageVal = match[0];
-                                    }
-
-                                    if (imageVal) imgMap[sku] = imageVal;
                                 }
                             }
                         }
@@ -1053,9 +1138,9 @@
                             if (refMap[skuKey]) {
                                 p.kategori = refMap[skuKey].kategori;
                                 p.merk = refMap[skuKey].merk;
-                            }
-                            if (imgMap[skuKey]) {
-                                p.imageId = imgMap[skuKey];
+                                p.gambarStoryId = refMap[skuKey].gambarStoryId;
+                                p.lastUpdate = refMap[skuKey].lastUpdate;
+                                p.fotoProdukId = refMap[skuKey].fotoProdukId;
                             }
                             
                             if (p.kategori && p.kategori !== '-') categoriesSet.add(p.kategori);
@@ -1078,8 +1163,9 @@
                             document.getElementById('container-filter-merk').classList.remove('hidden');
                         }
 
-                        // Render ulang secara diam-diam untuk menampilkan badge Kategori & Merk
-                        renderProducts();
+                        // Render ulang secara diam-diam untuk menampilkan update di UI
+                        if(activeTab === 'shop') renderProducts();
+                        if(activeTab === 'catalog') renderCatalog();
                     }
                 }).catch(err => console.log("Gagal memuat data referensi di background", err));
 
@@ -1108,22 +1194,18 @@
             
             return products.filter(p => {
                 let matchSearch = true;
-                
                 if (queryWords.length > 0) {
-                    // Semua kata kunci pencarian harus ditemukan di nama ATAU SKU produk (urutan bebas/acak)
                     matchSearch = queryWords.every(word => 
                         p.nama.toLowerCase().includes(word) || p.sku.toLowerCase().includes(word)
                     );
                 }
-
                 const matchCategory = selectedCategory === '' || p.kategori === selectedCategory;
                 const matchBrand = selectedBrand === '' || p.merk === selectedBrand;
-                
                 return matchSearch && matchCategory && matchBrand;
             });
         }
 
-        // Render Functions
+        // Render Functions SHOP
         function renderProducts() {
             const elProductList = document.getElementById('product-list');
             const elPaginationControls = document.getElementById('pagination-controls');
@@ -1229,6 +1311,92 @@
 
             lucide.createIcons();
         }
+
+        // Render Functions KATALOG
+        function renderCatalog() {
+            const elCatalogList = document.getElementById('catalog-list');
+            const elPaginationControls = document.getElementById('catalog-pagination-controls');
+            const elPaginationInfo = document.getElementById('catalog-pagination-info');
+            const elBtnPrev = document.getElementById('catalog-btn-prev');
+            const elBtnNext = document.getElementById('catalog-btn-next');
+
+            if(!elCatalogList) return;
+
+            // Hanya tampilkan produk yang memiliki gambar story
+            const catalogProducts = products.filter(p => p.gambarStoryId);
+            const queryWords = searchTermCatalog.toLowerCase().trim().split(/\s+/).filter(word => word.length > 0);
+            
+            const filtered = catalogProducts.filter(p => {
+                if(queryWords.length === 0) return true;
+                return queryWords.every(word => p.nama.toLowerCase().includes(word) || p.sku.toLowerCase().includes(word));
+            });
+
+            const totalPages = Math.ceil(filtered.length / itemsPerPage);
+            if (currentPageCatalog > totalPages && totalPages > 0) currentPageCatalog = totalPages;
+
+            const start = (currentPageCatalog - 1) * itemsPerPage;
+            const paginated = filtered.slice(start, start + itemsPerPage);
+
+            if (filtered.length === 0) {
+                elCatalogList.innerHTML = `
+                    <div class="col-span-full py-16 flex flex-col items-center justify-center text-gray-400">
+                        <i data-lucide="image" class="w-16 h-16 mb-3 text-gray-300"></i>
+                        <p class="font-medium">Katalog tidak ditemukan.</p>
+                    </div>`;
+                if(elPaginationControls) elPaginationControls.classList.add('hidden');
+                lucide.createIcons();
+                return;
+            }
+
+            elCatalogList.innerHTML = paginated.map(p => `
+                <div class="border border-gray-200 rounded-2xl overflow-hidden shadow-sm flex flex-col group hover:shadow-md transition-all bg-white">
+                    <div class="relative aspect-square bg-gray-50 flex items-center justify-center p-2">
+                        <img 
+                            src="https://lh3.googleusercontent.com/d/${p.gambarStoryId}" 
+                            alt="${p.nama}" 
+                            class="w-full h-full object-contain rounded-xl"
+                            onerror="this.onerror=null;this.src='https://placehold.co/600x600/f8fafc/94a3b8?text=Gambar+Rusak';"
+                        />
+                        <div class="absolute top-2 left-2 bg-white/90 backdrop-blur text-gray-800 text-[10px] font-bold px-2 py-1 rounded shadow-sm border border-gray-100">
+                            ${p.sku}
+                        </div>
+                    </div>
+                    <div class="p-3 flex flex-col flex-1 border-t border-gray-100">
+                        <h3 class="text-xs font-semibold text-gray-800 line-clamp-2 mb-1 flex-1" title="${p.nama}">${p.nama}</h3>
+                        ${p.lastUpdate && p.lastUpdate !== '-' ? `<p class="text-[10px] text-gray-400 mb-2">Update: ${p.lastUpdate}</p>` : '<div class="mb-2"></div>'}
+                        <button 
+                            onclick="handleShareCatalogWA('${p.id}')"
+                            class="w-full py-2 bg-[#25D366] hover:bg-[#1DA851] text-white rounded-xl flex justify-center items-center gap-1.5 font-bold text-xs shadow-sm transition-colors active-tap"
+                        >
+                            <i data-lucide="share-2" class="w-3.5 h-3.5"></i> Share WA
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+
+            if(elPaginationControls && elPaginationInfo && elBtnPrev && elBtnNext) {
+                elPaginationControls.classList.remove('hidden');
+                elPaginationInfo.innerText = `${currentPageCatalog} / ${totalPages}`;
+                elBtnPrev.disabled = currentPageCatalog === 1;
+                elBtnNext.disabled = currentPageCatalog === totalPages;
+            }
+
+            lucide.createIcons();
+        }
+
+        window.handleShareCatalogWA = (productId) => {
+            const product = products.find(p => p.id === productId);
+            if(!product || !product.gambarStoryId) return;
+
+            const imageUrl = `https://lh3.googleusercontent.com/d/${product.gambarStoryId}`;
+            let catalogText = `*Katalog Produk*\n\n`;
+            catalogText += `*SKU:* ${product.sku}\n`;
+            catalogText += `*Nama:* ${product.nama}\n\n`;
+            catalogText += `*Lihat Gambar:* ${imageUrl}`;
+            
+            const waUrl = `https://wa.me/?text=${encodeURIComponent(catalogText)}`;
+            window.open(waUrl, '_blank');
+        };
 
         function renderCart() {
             const elCartList = document.getElementById('cart-list');
@@ -1506,31 +1674,27 @@
             renderProducts();
         };
 
-        // Event Listeners Aman menggunakan ID Checker
+        // Event Listeners Aman menggunakan ID Checker (Belanja)
         document.getElementById('input-search')?.addEventListener('input', (e) => {
             searchTerm = e.target.value;
             currentPage = 1;
             renderProducts();
         });
-
         document.getElementById('filter-kategori')?.addEventListener('input', (e) => {
             selectedCategory = e.target.value;
             currentPage = 1;
             renderProducts();
         });
-
         document.getElementById('filter-merk')?.addEventListener('input', (e) => {
             selectedBrand = e.target.value;
             currentPage = 1;
             renderProducts();
         });
-
         document.getElementById('select-items-per-page')?.addEventListener('change', (e) => {
             itemsPerPage = Number(e.target.value);
             currentPage = 1;
             renderProducts();
         });
-
         document.getElementById('btn-prev-page')?.addEventListener('click', () => {
             if (currentPage > 1) {
                 currentPage--;
@@ -1538,7 +1702,6 @@
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
         });
-
         document.getElementById('btn-next-page')?.addEventListener('click', () => {
             const totalPages = Math.ceil(getFilteredProducts().length / itemsPerPage);
             if (currentPage < totalPages) {
@@ -1548,6 +1711,41 @@
             }
         });
 
+        // Event Listeners (Katalog)
+        document.getElementById('input-search-catalog')?.addEventListener('input', (e) => {
+            searchTermCatalog = e.target.value;
+            currentPageCatalog = 1;
+            renderCatalog();
+        });
+        document.getElementById('catalog-select-items-per-page')?.addEventListener('change', (e) => {
+            itemsPerPage = Number(e.target.value);
+            currentPageCatalog = 1;
+            renderCatalog();
+        });
+        document.getElementById('catalog-btn-prev')?.addEventListener('click', () => {
+            if (currentPageCatalog > 1) {
+                currentPageCatalog--;
+                renderCatalog();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        });
+        document.getElementById('catalog-btn-next')?.addEventListener('click', () => {
+            const catalogProducts = products.filter(p => p.gambarStoryId);
+            const queryWords = searchTermCatalog.toLowerCase().trim().split(/\s+/).filter(word => word.length > 0);
+            const filtered = catalogProducts.filter(p => {
+                if(queryWords.length === 0) return true;
+                return queryWords.every(word => p.nama.toLowerCase().includes(word) || p.sku.toLowerCase().includes(word));
+            });
+            const totalPages = Math.ceil(filtered.length / itemsPerPage);
+
+            if (currentPageCatalog < totalPages) {
+                currentPageCatalog++;
+                renderCatalog();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        });
+
+        // Event Listeners (Checkout)
         document.getElementById('btn-checkout')?.addEventListener('click', () => {
             const custName = document.getElementById('input-customer-name')?.value.trim() || '';
             const custPhone = document.getElementById('input-customer-phone')?.value.trim() || '';

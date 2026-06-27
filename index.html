@@ -377,7 +377,7 @@
                         <div>
                             <label class="block text-[10px] font-bold text-blue-600 uppercase tracking-wider mb-1.5">Sumber Gambar</label>
                             <select id="pdf-type" onchange="updatePdfGridOptions()" class="w-full text-xs font-bold text-gray-700 border border-blue-200 rounded-lg py-2 px-2.5 bg-white focus:ring-2 focus:ring-blue-400 outline-none cursor-pointer">
-                                <option value="story">Gambar Story (Landscape)</option>
+                                <option value="story">Gambar Story (Portrait 4:5)</option>
                                 <option value="foto">Foto Produk (Portrait)</option>
                             </select>
                         </div>
@@ -390,6 +390,7 @@
                         <div>
                             <label class="block text-[10px] font-bold text-blue-600 uppercase tracking-wider mb-1.5">Tampilkan Harga</label>
                             <select id="pdf-price" class="w-full text-xs font-bold text-gray-700 border border-blue-200 rounded-lg py-2 px-2.5 bg-white focus:ring-2 focus:ring-blue-400 outline-none cursor-pointer">
+                                <option value="active">Harga Aktif (Sesuai Pilihan)</option>
                                 <option value="none">Tanpa Harga</option>
                                 <option value="eceran">Harga Eceran</option>
                                 <option value="grosir">Harga Grosir</option>
@@ -838,7 +839,7 @@
 
             const type = document.getElementById('pdf-type').value; // 'story' or 'foto'
             const grid = document.getElementById('pdf-grid').value; // '2x2', '4x4', '6x6', '8x8'
-            const priceOpt = document.getElementById('pdf-price').value; // 'none', 'eceran', 'grosir', 'partai'
+            const priceOpt = document.getElementById('pdf-price').value; // 'active', 'none', 'eceran', 'grosir', 'partai'
             
             // Ambil array produk hanya dari yang ditandai/dipilih (catalogCart)
             let targetProducts = products.filter(p => catalogCart.includes(p.id));
@@ -857,23 +858,22 @@
 
             try {
                 const { jsPDF } = window.jspdf;
-                const isLandscape = type === 'story';
                 
-                // Inisialisasi JS PDF
+                // Selalu render dalam bentuk PORTRAIT
                 const doc = new jsPDF({
-                    orientation: isLandscape ? 'l' : 'p',
+                    orientation: 'p',
                     unit: 'mm',
                     format: 'a4'
                 });
 
-                // Dimensi Kertas A4 dalam Milimeter
-                const pageWidth = isLandscape ? 297 : 210;
-                const pageHeight = isLandscape ? 210 : 297;
+                // Dimensi Kertas A4 Portrait dalam Milimeter
+                const pageWidth = 210;
+                const pageHeight = 297;
                 
                 const margin = 10;
                 const cols = parseInt(grid.charAt(0)); // ex: '4x4' -> 4
                 const rows = parseInt(grid.charAt(2)); // ex: '4x4' -> 4
-                const spacing = 4; // Jarak antar gambar (mm)
+                const spacing = 4; // Jarak antar cell (mm)
 
                 const cellWidth = (pageWidth - (margin * 2) - (spacing * (cols - 1))) / cols;
                 const cellHeight = (pageHeight - (margin * 2) - (spacing * (rows - 1))) / rows;
@@ -896,11 +896,11 @@
                             const textSpace = priceOpt === 'none' ? 8 : 12;
                             const imageDrawHeight = cellHeight - textSpace;
                             
-                            // Sisipkan Gambar
+                            // Sisipkan Gambar (Otomatis menyesuaikan ke dalam grid, mendekati rasio 4:5 pada kertas Portrait)
                             doc.addImage(imgB64, 'JPEG', currentX, currentY, cellWidth, imageDrawHeight);
                             
                             // Sisipkan Teks (SKU & Nama)
-                            doc.setFontSize(isLandscape && cols <= 2 ? 10 : 8);
+                            doc.setFontSize(cols <= 2 ? 10 : 8);
                             doc.setFont("helvetica", "bold");
                             doc.setTextColor(0, 0, 0);
                             
@@ -911,13 +911,26 @@
                             // Print Teks di bawah gambar
                             doc.text(`[${p.sku}] ${shortName}`, currentX + 1, currentY + imageDrawHeight + 4, { maxWidth: cellWidth - 2 });
 
-                            // Tulis harga jika opsinya aktif
+                            // Tulis harga jika opsi tidak di-set 'none'
                             if (priceOpt !== 'none') {
-                                doc.setFontSize(isLandscape && cols <= 2 ? 9 : 7);
+                                doc.setFontSize(cols <= 2 ? 9 : 7);
                                 doc.setFont("helvetica", "normal");
                                 doc.setTextColor(200, 50, 50); // Merah tua estetik
-                                const priceVal = p.harga[priceOpt] || 0;
-                                doc.text(`${priceOpt.toUpperCase()}: Rp ${priceVal.toLocaleString('id-ID')}`, currentX + 1, currentY + imageDrawHeight + 9);
+                                
+                                let priceVal = 0;
+                                let priceLabel = '';
+
+                                // Menghitung Harga Berdasarkan Opsi yang Dipilih UI
+                                if (priceOpt === 'active') {
+                                    const activeTier = catalogTiers[p.id] || globalPriceTier;
+                                    priceVal = activeTier === 'custom' ? (catalogCustomPrices[p.id] || 0) : p.harga[activeTier];
+                                    priceLabel = activeTier.toUpperCase();
+                                } else {
+                                    priceVal = p.harga[priceOpt] || 0;
+                                    priceLabel = priceOpt.toUpperCase();
+                                }
+                                
+                                doc.text(`${priceLabel}: Rp ${priceVal.toLocaleString('id-ID')}`, currentX + 1, currentY + imageDrawHeight + 9);
                             }
                             
                             // Geser kursor X, Y ke kotak berikutnya
@@ -1023,6 +1036,7 @@
                     g = hue2rgb(p, q, h);
                     b = hue2rgb(p, q, h - 1/3);
                 }
+                // Hapus koma untuk format yang disupport Tailwind CDN
                 return `${Math.round(r * 255)} ${Math.round(g * 255)} ${Math.round(b * 255)}`;
             }
 
@@ -1509,6 +1523,9 @@
                 const imgUrl = `https://lh3.googleusercontent.com/d/${imgId}`;
                 const isSelected = catalogCart.includes(p.id);
                 
+                const activeTier = catalogTiers[p.id] || globalPriceTier;
+                const activeCustomPrice = catalogCustomPrices[p.id] || 0;
+
                 return `
                 <div class="border ${isSelected ? 'border-blue-500 ring-2 ring-blue-200 bg-blue-50/30' : 'border-gray-200 bg-white'} rounded-2xl overflow-hidden shadow-sm flex flex-col group hover:shadow-md transition-all relative">
                     ${isSelected ? '<div class="absolute top-2 right-2 bg-blue-500 text-white rounded-full p-1 shadow-md z-10"><i data-lucide="check" class="w-3 h-3"></i></div>' : ''}
@@ -1531,6 +1548,19 @@
                         <h3 class="text-[11px] font-semibold text-gray-800 line-clamp-2 mb-1 flex-1 leading-tight" title="${p.nama}">${p.nama}</h3>
                         ${windowCatalogSource === 'story' && p.lastUpdate && p.lastUpdate !== '-' ? `<p class="text-[9px] text-gray-400 font-medium mb-1.5 uppercase tracking-wide">Update: ${p.lastUpdate}</p>` : '<div class="mb-1.5"></div>'}
                         
+                        <select onchange="updateCatalogPriceTier('${p.id}', this.value)" class="w-full text-[10px] font-bold text-gray-700 bg-gray-50 border border-gray-200 rounded p-1.5 mb-1.5 appearance-none outline-none focus:ring-1 focus:ring-blue-400 bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%236b7280%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E')] bg-[length:8px_8px] bg-no-repeat bg-[position:right_8px_center]">
+                            <option value="eceran" ${activeTier === 'eceran' ? 'selected' : ''}>Eceran: ${formatRupiah(p.harga.eceran)}</option>
+                            <option value="grosir" ${activeTier === 'grosir' ? 'selected' : ''}>Grosir: ${formatRupiah(p.harga.grosir)}</option>
+                            <option value="partai" ${activeTier === 'partai' ? 'selected' : ''}>Partai: ${formatRupiah(p.harga.partai)}</option>
+                            <option value="custom" ${activeTier === 'custom' ? 'selected' : ''}>Harga Custom</option>
+                        </select>
+                        ${activeTier === 'custom' ? `
+                        <div class="flex items-center bg-white border border-gray-300 rounded overflow-hidden shadow-sm mb-1.5">
+                            <span class="bg-gray-100 text-gray-500 px-2 py-1 text-[10px] font-bold border-r border-gray-300">Rp</span>
+                            <input type="number" onchange="updateCatalogCustomPrice('${p.id}', this.value)" value="${activeCustomPrice || 0}" class="w-full px-2 py-1 text-[10px] font-bold text-gray-800 outline-none" placeholder="0" />
+                        </div>
+                        ` : ''}
+
                         <div class="flex flex-col gap-1.5 mt-auto">
                             <button 
                                 onclick="toggleCatalogCart('${p.id}')"
@@ -1816,7 +1846,7 @@
             syncProductButtons();
         }
 
-        // Action Functions
+        // Cart Actions
         window.addToCart = (productId, btnElement) => {
             const product = products.find(p => p.id === productId);
             if (!product) return;
@@ -1838,6 +1868,7 @@
             renderCart(); 
             renderProducts(); 
             
+            // Memberikan sedikit efek 'bounce' pada kontainer aksi
             const actionContainer = document.getElementById(`action-container-${productId}`);
             if (actionContainer) {
                 actionContainer.classList.add('scale-95');
@@ -1846,6 +1877,7 @@
                 }, 150);
             }
 
+            // Add subtle notification/bounce effect on cart icon
             const badge = document.getElementById('cart-badge-count');
             if(badge && badge.parentElement) {
                 badge.parentElement.classList.add('scale-110', 'bg-primary-200');
@@ -1875,6 +1907,7 @@
                 if (newQty > 0) {
                     item.qty = newQty;
                 } else if (newQty === 0) {
+                    // Jika diisi angka 0 secara manual, langsung hapus dari keranjang
                     removeCartItem(productId);
                     return;
                 }
@@ -1897,7 +1930,7 @@
                 }
             }
             renderCart();
-            renderProducts(); 
+            renderProducts(); // Update the dropdown visual on the catalog card
         };
 
         window.updateCustomPrice = (productId, value) => {
@@ -1925,6 +1958,7 @@
                 }
                 renderCart();
                 renderProducts(); 
+                if(activeTab === 'catalog') renderCatalog();
             } else {
                 catalogTiers[productId] = newTier;
                 if (newTier === 'custom' && !catalogCustomPrices[productId]) {
@@ -1932,6 +1966,7 @@
                     if(product) catalogCustomPrices[productId] = product.harga.eceran || 0;
                 }
                 renderProducts(); 
+                if(activeTab === 'catalog') renderCatalog();
             }
         };
 
@@ -1941,38 +1976,47 @@
             if (cartItem) {
                 cartItem.customPrice = val;
                 renderCart();
+                renderProducts();
+                if(activeTab === 'catalog') renderCatalog();
             } else {
                 catalogCustomPrices[productId] = val;
+                renderProducts();
+                if(activeTab === 'catalog') renderCatalog();
             }
         };
 
         window.updateGlobalPriceTier = (value) => {
             globalPriceTier = value;
-            catalogTiers = {}; 
+            catalogTiers = {}; // Reset local tier overrides on products that arent in cart yet
             renderProducts();
+            if(activeTab === 'catalog') renderCatalog();
         };
 
-        // Event Listeners Aman (Belanja)
+        // Event Listeners Aman menggunakan ID Checker
         document.getElementById('input-search')?.addEventListener('input', (e) => {
             searchTerm = e.target.value;
             currentPage = 1;
             renderProducts();
         });
+
         document.getElementById('filter-kategori')?.addEventListener('input', (e) => {
             selectedCategory = e.target.value;
             currentPage = 1;
             renderProducts();
         });
+
         document.getElementById('filter-merk')?.addEventListener('input', (e) => {
             selectedBrand = e.target.value;
             currentPage = 1;
             renderProducts();
         });
+
         document.getElementById('select-items-per-page')?.addEventListener('change', (e) => {
             itemsPerPage = Number(e.target.value);
             currentPage = 1;
             renderProducts();
         });
+
         document.getElementById('btn-prev-page')?.addEventListener('click', () => {
             if (currentPage > 1) {
                 currentPage--;
@@ -1980,6 +2024,7 @@
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
         });
+
         document.getElementById('btn-next-page')?.addEventListener('click', () => {
             const totalPages = Math.ceil(getFilteredProducts().length / itemsPerPage);
             if (currentPage < totalPages) {
@@ -1989,46 +2034,6 @@
             }
         });
 
-        // Event Listeners (Katalog)
-        document.getElementById('input-search-catalog')?.addEventListener('input', (e) => {
-            searchTermCatalog = e.target.value;
-            currentPageCatalog = 1;
-            renderCatalog();
-        });
-        document.getElementById('filter-kategori-catalog')?.addEventListener('input', (e) => {
-            catalogCategory = e.target.value;
-            currentPageCatalog = 1;
-            renderCatalog();
-        });
-        document.getElementById('filter-merk-catalog')?.addEventListener('input', (e) => {
-            catalogBrand = e.target.value;
-            currentPageCatalog = 1;
-            renderCatalog();
-        });
-        document.getElementById('catalog-select-items-per-page')?.addEventListener('change', (e) => {
-            itemsPerPage = Number(e.target.value);
-            currentPageCatalog = 1;
-            renderCatalog();
-        });
-        document.getElementById('catalog-btn-prev')?.addEventListener('click', () => {
-            if (currentPageCatalog > 1) {
-                currentPageCatalog--;
-                renderCatalog();
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            }
-        });
-        document.getElementById('catalog-btn-next')?.addEventListener('click', () => {
-            const filtered = getFilteredCatalogProducts();
-            const totalPages = Math.ceil(filtered.length / itemsPerPage);
-
-            if (currentPageCatalog < totalPages) {
-                currentPageCatalog++;
-                renderCatalog();
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            }
-        });
-
-        // Event Listeners (Checkout)
         document.getElementById('btn-checkout')?.addEventListener('click', () => {
             const custName = document.getElementById('input-customer-name')?.value.trim() || '';
             const custPhone = document.getElementById('input-customer-phone')?.value.trim() || '';

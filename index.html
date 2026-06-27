@@ -788,22 +788,37 @@
 
         // Fungsi Download JPG
         window.downloadJpg = async (sku, imageId) => {
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            const url = `https://lh3.googleusercontent.com/d/${imageId}`;
+            
+            if (isIOS) {
+                // iOS workaround: Buka gambar di tab baru karena Safari sering memblokir auto-download blob
+                window.open(url, '_blank');
+                showToast("Gambar dibuka di tab baru (Khusus iOS)", "success");
+                return;
+            }
+
             try {
                 showToast("Sedang memproses gambar...", "success");
-                const url = `https://lh3.googleusercontent.com/d/${imageId}`;
                 const response = await fetch(url);
                 const blob = await response.blob();
                 const objectUrl = window.URL.createObjectURL(blob);
+                
                 const a = document.createElement('a');
+                a.style.display = 'none';
                 a.href = objectUrl;
                 a.download = `Katalog_${sku}.jpg`;
                 document.body.appendChild(a);
                 a.click();
-                document.body.removeChild(a);
-                window.URL.revokeObjectURL(objectUrl);
+                
+                // Cleanup memori setelah diunduh
+                setTimeout(() => {
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(objectUrl);
+                }, 1000);
             } catch (err) {
                 console.error("Gagal download:", err);
-                showToast("Gagal mendownload gambar. Coba lagi nanti.", "error");
+                showToast("Gagal mendownload gambar. Coba lagi.", "error");
             }
         };
 
@@ -818,11 +833,8 @@
                     canvas.height = img.naturalHeight;
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0);
-                    resolve({
-                        dataUrl: canvas.toDataURL('image/png'),
-                        width: img.naturalWidth,
-                        height: img.naturalHeight
-                    });
+                    // Mengembalikan gambar dalam bentuk data URL untuk dimasukkan ke PDF
+                    resolve(canvas.toDataURL('image/jpeg', 0.8));
                 };
                 img.onerror = reject;
                 img.src = url;
@@ -859,7 +871,7 @@
             elLoading.classList.add('flex');
 
             try {
-                // Load Logo Toko dari Drive
+                // Load Logo Toko dari Drive (Resolusi tinggi, format tembus pandang)
                 let storeLogo = null;
                 try {
                     storeLogo = await loadImageBase64('https://lh3.googleusercontent.com/d/1dyed9YL6QxBSDefdx47sf8pWXUVWD3nc');
@@ -870,7 +882,7 @@
                 const { jsPDF } = window.jspdf;
                 
                 // Selalu Portrait A4
-                const doc = new jsPDF({w
+                const doc = new jsPDF({
                     orientation: 'p',
                     unit: 'mm',
                     format: 'a4'
@@ -883,7 +895,7 @@
                 const rows = parseInt(grid.charAt(2)); 
                 
                 // Konfigurasi Margin & Area Desain
-                const headerH = 30; // Ruang untuk Header Kuning
+                const headerH = 32; // Dinaikkan sedikit untuk menampung logo lebih besar
                 const footerH = 25; // Ruang untuk Footer Kuning
                 const baseMarginSide = 12;
                 const spacingX = cols <= 4 ? 6 : 4; // Jarak horizontal antar kotak
@@ -895,11 +907,17 @@
                 const maxCellW = (usableWidth - (spacingX * (cols - 1))) / cols;
                 const maxCellH = (usableHeight - (spacingY * (rows - 1))) / rows;
 
-                // Rasio Box Gambar (Sangat Presisi sesuai Template)
+                // Rasio Box Gambar
+                // Foto Produk (1:1), Gambar Story Portrait (4:5 -> 1.25)
                 const ratio = type === 'story' ? (5 / 4) : 1; 
 
-                // Alokasi ruang untuk teks di bawah gambar
-                const textReserveArea = cols <= 2 ? 22 : (cols <= 4 ? 16 : 12);
+                // Alokasi ruang teks di bawah gambar - DIPERBESAR untuk 'foto' agar tidak terpotong
+                let textReserveArea;
+                if (type === 'foto') {
+                    textReserveArea = cols <= 4 ? 24 : 18; // Ruang yang luas untuk max 4 baris teks
+                } else {
+                    textReserveArea = cols <= 2 ? 22 : (cols <= 4 ? 16 : 12); // Standar untuk Story (2 baris)
+                }
                 
                 // Kalkulasi Dimensi Box Presisi (Anti Tumpuk & Pas di Kertas)
                 let imageBoxWidth = Math.min(maxCellW, (maxCellH - textReserveArea) / ratio);
@@ -924,23 +942,25 @@
                 const drawHeaderFooter = () => {
                     // HEADER BACKGROUND (Kuning)
                     doc.setFillColor(255, 230, 0); 
-                    doc.rect(0, 0, pageWidth, 20, 'F');
+                    doc.rect(0, 0, pageWidth, 22, 'F');
                     
                     // HEADER ACCENT (Biru Kanan)
                     doc.setFillColor(15, 85, 200); 
-                    doc.rect(145, 0, 65, 20, 'F');
+                    doc.rect(145, 0, 65, 22, 'F');
 
                     // TEKS HEADER
                     doc.setFont("helvetica", "bolditalic");
                     doc.setFontSize(22);
                     doc.setTextColor(15, 85, 200);
-                    doc.text("KATALOG PRODUK", 15, 14);
+                    doc.text("KATALOG PRODUK", 15, 15);
 
-                    // Menambahkan Logo Toko di Kanan Atas
+                    // LOGO TOKO DIPERBESAR
                     if (storeLogo) {
-                        const logoH = 16; 
-                        const logoW = (storeLogo.width / storeLogo.height) * logoH;
-                        doc.addImage(storeLogo.dataUrl, 'PNG', pageWidth - logoW - 5, 2, logoW, logoH);
+                        const logoH = 26; // DIPERBESAR (sebelumnya 16)
+                        // Karena gambar disimpan dalam base64 dan jsPDF tidak selalu tahu dimensinya tanpa image object,
+                        // kita tentukan lebar relatif (anggap logo kotak/persegi panjang, jika gepeng sesuaikan rasionya)
+                        // Untuk aman, kita jadikan lebar proporsional 26x26 (atau sesuaikan jika logo persegi panjang)
+                        doc.addImage(storeLogo, 'JPEG', pageWidth - 26 - 5, 2, 26, logoH);
                     }
 
                     // FOOTER BACKGROUND (Kuning)
@@ -959,24 +979,41 @@
 
                     // TEKS FOOTER BIRU (#PASTILEBIHPUAS)
                     doc.setFont("helvetica", "bolditalic");
-                    doc.setFontSize(14);
+                    doc.setFontSize(15);
                     doc.setTextColor(255, 255, 255);
                     doc.text("#PASTILEBIHPUAS", 130, pageHeight - 11);
 
-                    // Vector Draw Logo Instagram Putih
-                    const igX = 130;
-                    const igY = pageHeight - 8.5;
+                    // TATA LETAK ICON MEDSOS (FB, IG, TIKTOK)
+                    const iconY = pageHeight - 8.5;
+                    const startX = 130; // Mulai dari sisi kiri kotak biru
+
+                    // Icon 1: FACEBOOK (Huruf 'f' dengan kotak bersudut tumpul)
                     doc.setDrawColor(255, 255, 255);
                     doc.setLineWidth(0.4);
-                    doc.roundedRect(igX, igY, 4.5, 4.5, 1, 1, 'S'); // Kotak IG
-                    doc.circle(igX + 2.25, igY + 2.25, 1.1, 'S'); // Lingkaran tengah IG
-                    doc.setFillColor(255, 255, 255);
-                    doc.circle(igX + 3.5, igY + 1, 0.3, 'F'); // Titik IG
-
-                    // Username Instagram
+                    doc.roundedRect(startX, iconY, 4.5, 4.5, 1, 1, 'S'); // Kotak luar
                     doc.setFont("helvetica", "bold");
-                    doc.setFontSize(11);
-                    doc.text("@globalmart.id", igX + 6, pageHeight - 5.2);
+                    doc.setFontSize(9);
+                    doc.text("f", startX + 1.6, iconY + 3.4); // Teks f di tengah
+
+                    // Icon 2: INSTAGRAM (Kamera Kotak)
+                    const igX = startX + 6;
+                    doc.roundedRect(igX, iconY, 4.5, 4.5, 1, 1, 'S'); // Kotak luar
+                    doc.circle(igX + 2.25, iconY + 2.25, 1.1, 'S'); // Lensa kamera
+                    doc.setFillColor(255, 255, 255);
+                    doc.circle(igX + 3.5, iconY + 1, 0.3, 'F'); // Flash kamera
+
+                    // Icon 3: TIKTOK (Simbol Note/Teks 't' italic)
+                    const tkX = startX + 12;
+                    doc.setDrawColor(255, 255, 255);
+                    doc.roundedRect(tkX, iconY, 4.5, 4.5, 1, 1, 'S'); // Kotak luar
+                    doc.setFont("helvetica", "bolditalic");
+                    doc.setFontSize(9);
+                    doc.text("t", tkX + 1.5, iconY + 3.4); // Teks t menyerupai logo nada
+
+                    // Username: globalmart.id (Tanpa @)
+                    doc.setFont("helvetica", "bold");
+                    doc.setFontSize(10);
+                    doc.text("globalmart.id", startX + 18, pageHeight - 5.2);
                 };
 
                 // Gambar Header di Halaman Pertama
@@ -988,7 +1025,7 @@
                     
                     if (imgId && imgId !== '-') {
                         try {
-                            const imgObj = await loadImageBase64(`https://lh3.googleusercontent.com/d/${imgId}`);
+                            const imgB64 = await loadImageBase64(`https://lh3.googleusercontent.com/d/${imgId}`);
                             
                             // 1. Gambar Kotak Batas Biru (Border)
                             doc.setDrawColor(15, 85, 200); 
@@ -997,7 +1034,7 @@
                             
                             // 2. Sisipkan Gambar ke dalam kotak biru dengan sedikit padding
                             const pad = 1;
-                            doc.addImage(imgObj.dataUrl, 'PNG', currentX + pad, currentY + pad, cellWidth - (pad*2), imageBoxHeight - (pad*2));
+                            doc.addImage(imgB64, 'JPEG', currentX + pad, currentY + pad, cellWidth - (pad*2), imageBoxHeight - (pad*2));
                             
                             // 3. Render Teks SKU dan NAMA PRODUK
                             doc.setFontSize(cols <= 2 ? 10 : (cols <= 4 ? 8 : 6));
@@ -1006,11 +1043,12 @@
                             
                             const fullTextName = `[${p.sku}] ${p.nama}`;
                             
-                            // Fitur Word-wrap Otomatis agar teks tidak ke samping
-                            const splitText = doc.splitTextToSize(fullTextName, cellWidth);
+                            // Fitur Word-wrap Otomatis (Memotong teks ke baris bawah, bukan membuangnya)
+                            const splitText = doc.splitTextToSize(fullTextName, cellWidth - 1);
                             
-                            // Batasi jumlah baris agar tidak tabrakan ke bawah
-                            const maxLines = cols <= 4 ? 2 : 2;
+                            // PERBAIKAN: Jika 'foto', kita biarkan teks merayap turun hingga 4 baris penuh agar tidak terpotong.
+                            const maxLines = type === 'foto' ? 4 : (cols <= 4 ? 2 : 2);
+                            
                             let textToPrint = splitText.slice(0, maxLines);
                             if (splitText.length > maxLines) {
                                 textToPrint[maxLines - 1] = textToPrint[maxLines - 1].substring(0, textToPrint[maxLines - 1].length - 3) + '...';
@@ -1019,7 +1057,7 @@
                             const textStartY = currentY + imageBoxHeight + (cols <= 4 ? 4 : 3);
                             doc.text(textToPrint, currentX, textStartY);
 
-                            // 4. Hitung Posisi Harga agar selalu tepat di bawah Teks Nama
+                            // 4. Hitung Posisi Harga agar selalu tepat di bawah rentetan Teks Nama
                             const lineHeightPx = doc.getLineHeight() * 0.3527; // konversi mm
                             const priceStartY = textStartY + (textToPrint.length * lineHeightPx) + 0.5;
 
@@ -1068,13 +1106,21 @@
                             }
 
                         } catch (err) {
-                            console.warn("Melewati gambar karena gagal diload untuk SKU:", p.sku);
+                            console.warn("Melewati gambar karena gagal diload:", p.sku);
                         }
                     }
                 }
 
-                doc.save(`Katalog_${type.toUpperCase()}_${new Date().getTime()}.pdf`);
-                showToast("PDF Katalog berhasil dibuat dan diunduh!", "success");
+                // Download/Save File PDF dengan pendeteksi Handphone
+                try {
+                    doc.save(`Katalog_${type.toUpperCase()}_${new Date().getTime()}.pdf`);
+                    showToast("PDF Katalog berhasil dibuat dan diunduh!", "success");
+                } catch(e) {
+                    // Mobile Safari/Handphone Fallback
+                    const pdfUrl = URL.createObjectURL(doc.output('blob'));
+                    window.open(pdfUrl, '_blank');
+                    showToast("Membuka PDF di tab baru (Khusus Mobile)", "success");
+                }
 
             } catch (err) {
                 console.error("PDF Error:", err);

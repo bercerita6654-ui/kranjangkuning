@@ -825,7 +825,7 @@
             });
         };
 
-        // Fungsi Generate PDF (jsPDF) Layout Sesuai Template
+        // Fungsi Generate PDF (jsPDF) Layout Presisi
         window.generatePDF = async () => {
             if (!window.jspdf) {
                 showToast("Library jsPDF belum selesai dimuat, coba lagi.", "error");
@@ -871,21 +871,37 @@
                 const rows = parseInt(grid.charAt(2)); 
                 
                 // Konfigurasi Margin & Area Desain
-                const marginTop = 30; // Ruang untuk Header Kuning
-                const marginBottom = 25; // Ruang untuk Footer Kuning
-                const marginSide = 12;
-                const spacingX = 6; // Jarak horizontal antar kotak
-                const spacingY = 10; // Jarak vertikal antar baris agar teks tidak nabrak
+                const headerH = 30; // Ruang untuk Header Kuning
+                const footerH = 25; // Ruang untuk Footer Kuning
+                const baseMarginSide = 12;
+                const spacingX = cols <= 4 ? 6 : 4; // Jarak horizontal antar kotak
+                const spacingY = cols <= 4 ? 8 : 5; // Jarak vertikal antar baris agar teks tidak nabrak
                 
-                const usableWidth = pageWidth - (marginSide * 2);
-                const usableHeight = pageHeight - marginTop - marginBottom;
+                const usableWidth = pageWidth - (baseMarginSide * 2);
+                const usableHeight = pageHeight - headerH - footerH;
 
-                const cellWidth = (usableWidth - (spacingX * (cols - 1))) / cols;
-                const cellHeight = (usableHeight - (spacingY * (rows - 1))) / rows;
+                const maxCellW = (usableWidth - (spacingX * (cols - 1))) / cols;
+                const maxCellH = (usableHeight - (spacingY * (rows - 1))) / rows;
+
+                // Rasio Box Gambar (Sangat Presisi sesuai Template)
+                const ratio = type === 'story' ? (5 / 4) : 1; 
 
                 // Alokasi ruang untuk teks di bawah gambar
-                const textReserveArea = cols <= 4 ? 20 : (cols <= 6 ? 16 : 14);
-                const imageBoxHeight = cellHeight - textReserveArea;
+                const textReserveArea = cols <= 2 ? 22 : (cols <= 4 ? 16 : 12);
+                
+                // Kalkulasi Dimensi Box Presisi (Anti Tumpuk & Pas di Kertas)
+                let imageBoxWidth = Math.min(maxCellW, (maxCellH - textReserveArea) / ratio);
+                let imageBoxHeight = imageBoxWidth * ratio;
+
+                const cellWidth = imageBoxWidth;
+                const cellHeight = imageBoxHeight + textReserveArea;
+
+                // Hitung ulang margin untuk Center/Tengah
+                const totalGridW = (cols * cellWidth) + (spacingX * (cols - 1));
+                const totalGridH = (rows * cellHeight) + (spacingY * (rows - 1));
+
+                const marginSide = (pageWidth - totalGridW) / 2;
+                const marginTop = headerH + (usableHeight - totalGridH) / 2;
 
                 let currentX = marginSide;
                 let currentY = marginTop;
@@ -960,18 +976,18 @@
                             const splitText = doc.splitTextToSize(fullTextName, cellWidth);
                             
                             // Batasi jumlah baris agar tidak tabrakan ke bawah
-                            const maxLines = cols <= 4 ? 3 : 2;
+                            const maxLines = cols <= 4 ? 2 : 2;
                             let textToPrint = splitText.slice(0, maxLines);
                             if (splitText.length > maxLines) {
-                                textToPrint[maxLines - 1] += '...';
+                                textToPrint[maxLines - 1] = textToPrint[maxLines - 1].substring(0, textToPrint[maxLines - 1].length - 3) + '...';
                             }
 
-                            const textStartY = currentY + imageBoxHeight + 5;
+                            const textStartY = currentY + imageBoxHeight + (cols <= 4 ? 4 : 3);
                             doc.text(textToPrint, currentX, textStartY);
 
                             // 4. Hitung Posisi Harga agar selalu tepat di bawah Teks Nama
                             const lineHeightPx = doc.getLineHeight() * 0.3527; // konversi mm
-                            const priceStartY = textStartY + (textToPrint.length * lineHeightPx) + 1;
+                            const priceStartY = textStartY + (textToPrint.length * lineHeightPx) + 0.5;
 
                             // 5. Render Harga (Warna Merah Tua)
                             if (priceOpt !== 'none') {

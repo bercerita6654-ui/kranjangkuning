@@ -825,7 +825,7 @@
             });
         };
 
-        // Fungsi Generate PDF (jsPDF)
+        // Fungsi Generate PDF (jsPDF) Layout Sesuai Template
         window.generatePDF = async () => {
             if (!window.jspdf) {
                 showToast("Library jsPDF belum selesai dimuat, coba lagi.", "error");
@@ -837,11 +837,10 @@
                 return;
             }
 
-            const type = document.getElementById('pdf-type').value; // 'story' or 'foto'
-            const grid = document.getElementById('pdf-grid').value; // '2x2', '4x4', '6x6', '8x8'
-            const priceOpt = document.getElementById('pdf-price').value; // 'active', 'none', 'eceran', 'grosir', 'partai'
+            const type = document.getElementById('pdf-type').value; 
+            const grid = document.getElementById('pdf-grid').value; 
+            const priceOpt = document.getElementById('pdf-price').value; 
             
-            // Ambil array produk hanya dari yang ditandai/dipilih (catalogCart)
             let targetProducts = products.filter(p => catalogCart.includes(p.id));
 
             if (targetProducts.length === 0) {
@@ -849,7 +848,6 @@
                 return;
             }
 
-            // UI Loading...
             const elLoading = document.getElementById('loading-overlay');
             const elLoadingText = document.getElementById('loading-text');
             elLoadingText.innerText = "Mengekstrak Gambar & Membuat PDF... Mohon tunggu.";
@@ -859,31 +857,81 @@
             try {
                 const { jsPDF } = window.jspdf;
                 
-                // Selalu render dalam bentuk PORTRAIT
+                // Selalu Portrait A4
                 const doc = new jsPDF({
                     orientation: 'p',
                     unit: 'mm',
                     format: 'a4'
                 });
 
-                // Dimensi Kertas A4 Portrait dalam Milimeter
                 const pageWidth = 210;
                 const pageHeight = 297;
                 
-                const margin = 10;
-                const cols = parseInt(grid.charAt(0)); // ex: '4x4' -> 4
-                const rows = parseInt(grid.charAt(2)); // ex: '4x4' -> 4
-                const spacing = 4; // Jarak antar cell (mm)
+                const cols = parseInt(grid.charAt(0)); 
+                const rows = parseInt(grid.charAt(2)); 
+                
+                // Konfigurasi Margin & Area Desain
+                const marginTop = 30; // Ruang untuk Header Kuning
+                const marginBottom = 25; // Ruang untuk Footer Kuning
+                const marginSide = 12;
+                const spacingX = 6; // Jarak horizontal antar kotak
+                const spacingY = 10; // Jarak vertikal antar baris agar teks tidak nabrak
+                
+                const usableWidth = pageWidth - (marginSide * 2);
+                const usableHeight = pageHeight - marginTop - marginBottom;
 
-                const cellWidth = (pageWidth - (margin * 2) - (spacing * (cols - 1))) / cols;
-                const cellHeight = (pageHeight - (margin * 2) - (spacing * (rows - 1))) / rows;
+                const cellWidth = (usableWidth - (spacingX * (cols - 1))) / cols;
+                const cellHeight = (usableHeight - (spacingY * (rows - 1))) / rows;
 
-                let currentX = margin;
-                let currentY = margin;
+                // Alokasi ruang untuk teks di bawah gambar
+                const textReserveArea = cols <= 4 ? 20 : (cols <= 6 ? 16 : 14);
+                const imageBoxHeight = cellHeight - textReserveArea;
+
+                let currentX = marginSide;
+                let currentY = marginTop;
                 let currentCol = 0;
                 let currentRow = 0;
 
-                // Loop setiap produk yang dipilih
+                // Fungsi Internal Menggambar Header & Footer Template
+                const drawHeaderFooter = () => {
+                    // HEADER BACKGROUND (Kuning)
+                    doc.setFillColor(255, 230, 0); 
+                    doc.rect(0, 0, pageWidth, 20, 'F');
+                    
+                    // HEADER ACCENT (Biru Kanan)
+                    doc.setFillColor(15, 85, 200); 
+                    doc.rect(155, 0, 55, 20, 'F');
+
+                    // TEKS HEADER
+                    doc.setFont("helvetica", "bolditalic");
+                    doc.setFontSize(22);
+                    doc.setTextColor(15, 85, 200);
+                    doc.text("KATALOG PRODUK", 15, 14);
+
+                    // FOOTER BACKGROUND (Kuning)
+                    doc.setFillColor(255, 230, 0);
+                    doc.rect(0, pageHeight - 20, pageWidth, 20, 'F');
+                    
+                    // FOOTER ACCENT (Biru Kanan)
+                    doc.setFillColor(15, 85, 200);
+                    doc.rect(135, pageHeight - 20, 75, 20, 'F');
+
+                    // TEKS FOOTER BIRU
+                    doc.setFont("helvetica", "bolditalic");
+                    doc.setFontSize(15);
+                    doc.setTextColor(255, 255, 255);
+                    doc.text("#PASTILEBIHPUAS", 140, pageHeight - 8);
+
+                    // TEKS FOOTER KUNING
+                    doc.setFont("helvetica", "bold");
+                    doc.setFontSize(8);
+                    doc.setTextColor(0, 0, 0);
+                    doc.text("PRODUK ORIGINAL    |    HARGA BERSAHABAT    |    LENGKAP & TERPERCAYA", 15, pageHeight - 9);
+                };
+
+                // Gambar Header di Halaman Pertama
+                drawHeaderFooter();
+
                 for (let i = 0; i < targetProducts.length; i++) {
                     const p = targetProducts[i];
                     const imgId = type === 'story' ? p.gambarStoryId : p.fotoProdukId;
@@ -892,35 +940,48 @@
                         try {
                             const imgB64 = await loadImageBase64(`https://lh3.googleusercontent.com/d/${imgId}`);
                             
-                            // Hitung ruang teks di bawah gambar
-                            const textSpace = priceOpt === 'none' ? 8 : 12;
-                            const imageDrawHeight = cellHeight - textSpace;
+                            // 1. Gambar Kotak Batas Biru (Border)
+                            doc.setDrawColor(15, 85, 200); 
+                            doc.setLineWidth(0.8);
+                            doc.rect(currentX, currentY, cellWidth, imageBoxHeight);
                             
-                            // Sisipkan Gambar (Otomatis menyesuaikan ke dalam grid, mendekati rasio 4:5 pada kertas Portrait)
-                            doc.addImage(imgB64, 'JPEG', currentX, currentY, cellWidth, imageDrawHeight);
+                            // 2. Sisipkan Gambar ke dalam kotak biru dengan sedikit padding
+                            const pad = 1;
+                            doc.addImage(imgB64, 'JPEG', currentX + pad, currentY + pad, cellWidth - (pad*2), imageBoxHeight - (pad*2));
                             
-                            // Sisipkan Teks (SKU & Nama)
-                            doc.setFontSize(cols <= 2 ? 10 : 8);
+                            // 3. Render Teks SKU dan NAMA PRODUK
+                            doc.setFontSize(cols <= 2 ? 10 : (cols <= 4 ? 8 : 6));
                             doc.setFont("helvetica", "bold");
                             doc.setTextColor(0, 0, 0);
                             
-                            // Memotong nama jika terlalu panjang
-                            const maxChars = cols >= 6 ? 15 : (cols >= 4 ? 25 : 45);
-                            let shortName = p.nama.length > maxChars ? p.nama.substring(0, maxChars) + '...' : p.nama;
+                            const fullTextName = `[${p.sku}] ${p.nama}`;
                             
-                            // Print Teks di bawah gambar
-                            doc.text(`[${p.sku}] ${shortName}`, currentX + 1, currentY + imageDrawHeight + 4, { maxWidth: cellWidth - 2 });
+                            // Fitur Word-wrap Otomatis agar teks tidak ke samping
+                            const splitText = doc.splitTextToSize(fullTextName, cellWidth);
+                            
+                            // Batasi jumlah baris agar tidak tabrakan ke bawah
+                            const maxLines = cols <= 4 ? 3 : 2;
+                            let textToPrint = splitText.slice(0, maxLines);
+                            if (splitText.length > maxLines) {
+                                textToPrint[maxLines - 1] += '...';
+                            }
 
-                            // Tulis harga jika opsi tidak di-set 'none'
+                            const textStartY = currentY + imageBoxHeight + 5;
+                            doc.text(textToPrint, currentX, textStartY);
+
+                            // 4. Hitung Posisi Harga agar selalu tepat di bawah Teks Nama
+                            const lineHeightPx = doc.getLineHeight() * 0.3527; // konversi mm
+                            const priceStartY = textStartY + (textToPrint.length * lineHeightPx) + 1;
+
+                            // 5. Render Harga (Warna Merah Tua)
                             if (priceOpt !== 'none') {
-                                doc.setFontSize(cols <= 2 ? 9 : 7);
+                                doc.setFontSize(cols <= 2 ? 9 : (cols <= 4 ? 8 : 6));
                                 doc.setFont("helvetica", "normal");
-                                doc.setTextColor(200, 50, 50); // Merah tua estetik
+                                doc.setTextColor(180, 40, 40); // Merah kecoklatan
                                 
                                 let priceVal = 0;
                                 let priceLabel = '';
 
-                                // Menghitung Harga Berdasarkan Opsi yang Dipilih UI
                                 if (priceOpt === 'active') {
                                     const activeTier = catalogTiers[p.id] || globalPriceTier;
                                     priceVal = activeTier === 'custom' ? (catalogCustomPrices[p.id] || 0) : p.harga[activeTier];
@@ -930,27 +991,27 @@
                                     priceLabel = priceOpt.toUpperCase();
                                 }
                                 
-                                doc.text(`${priceLabel}: Rp ${priceVal.toLocaleString('id-ID')}`, currentX + 1, currentY + imageDrawHeight + 9);
+                                doc.text(`${priceLabel}: Rp ${formatNumber(priceVal)}`, currentX, priceStartY);
                             }
                             
-                            // Geser kursor X, Y ke kotak berikutnya
+                            // Perhitungan Grid: Geser ke samping atau ke baris bawah
                             currentCol++;
                             if (currentCol >= cols) {
                                 currentCol = 0;
                                 currentRow++;
-                                currentX = margin;
-                                currentY += cellHeight + spacing;
+                                currentX = marginSide;
+                                currentY += cellHeight + spacingY;
                             } else {
-                                currentX += cellWidth + spacing;
+                                currentX += cellWidth + spacingX;
                             }
 
-                            // Cek jika butuh halaman baru
+                            // Tambah halaman baru jika baris sudah penuh
                             if (currentRow >= rows) {
-                                // Hanya tambah halaman baru jika masih ada produk sisa
                                 if (i < targetProducts.length - 1) {
                                     doc.addPage();
-                                    currentX = margin;
-                                    currentY = margin;
+                                    drawHeaderFooter(); // Gambar ulang template header di halaman baru
+                                    currentX = marginSide;
+                                    currentY = marginTop;
                                     currentCol = 0;
                                     currentRow = 0;
                                 }
@@ -962,7 +1023,6 @@
                     }
                 }
 
-                // Download/Save File PDF
                 doc.save(`Katalog_${type.toUpperCase()}_${new Date().getTime()}.pdf`);
                 showToast("PDF Katalog berhasil dibuat dan diunduh!", "success");
 

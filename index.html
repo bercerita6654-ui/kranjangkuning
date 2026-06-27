@@ -818,7 +818,11 @@
                     canvas.height = img.naturalHeight;
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0);
-                    resolve(canvas.toDataURL('image/jpeg', 0.8));
+                    resolve({
+                        dataUrl: canvas.toDataURL('image/png'),
+                        width: img.naturalWidth,
+                        height: img.naturalHeight
+                    });
                 };
                 img.onerror = reject;
                 img.src = url;
@@ -855,6 +859,14 @@
             elLoading.classList.add('flex');
 
             try {
+                // Load Logo Toko dari Drive
+                let storeLogo = null;
+                try {
+                    storeLogo = await loadImageBase64('https://lh3.googleusercontent.com/d/1dyed9YL6QxBSDefdx47sf8pWXUVWD3nc');
+                } catch(err) {
+                    console.warn('Gagal meload logo toko:', err);
+                }
+
                 const { jsPDF } = window.jspdf;
                 
                 // Selalu Portrait A4
@@ -916,7 +928,7 @@
                     
                     // HEADER ACCENT (Biru Kanan)
                     doc.setFillColor(15, 85, 200); 
-                    doc.rect(155, 0, 55, 20, 'F');
+                    doc.rect(145, 0, 65, 20, 'F');
 
                     // TEKS HEADER
                     doc.setFont("helvetica", "bolditalic");
@@ -924,25 +936,47 @@
                     doc.setTextColor(15, 85, 200);
                     doc.text("KATALOG PRODUK", 15, 14);
 
+                    // Menambahkan Logo Toko di Kanan Atas
+                    if (storeLogo) {
+                        const logoH = 16; 
+                        const logoW = (storeLogo.width / storeLogo.height) * logoH;
+                        doc.addImage(storeLogo.dataUrl, 'PNG', pageWidth - logoW - 5, 2, logoW, logoH);
+                    }
+
                     // FOOTER BACKGROUND (Kuning)
                     doc.setFillColor(255, 230, 0);
                     doc.rect(0, pageHeight - 20, pageWidth, 20, 'F');
                     
                     // FOOTER ACCENT (Biru Kanan)
                     doc.setFillColor(15, 85, 200);
-                    doc.rect(135, pageHeight - 20, 75, 20, 'F');
-
-                    // TEKS FOOTER BIRU
-                    doc.setFont("helvetica", "bolditalic");
-                    doc.setFontSize(15);
-                    doc.setTextColor(255, 255, 255);
-                    doc.text("#PASTILEBIHPUAS", 140, pageHeight - 8);
+                    doc.rect(125, pageHeight - 20, 85, 20, 'F');
 
                     // TEKS FOOTER KUNING
                     doc.setFont("helvetica", "bold");
                     doc.setFontSize(8);
                     doc.setTextColor(0, 0, 0);
                     doc.text("PRODUK ORIGINAL    |    HARGA BERSAHABAT    |    LENGKAP & TERPERCAYA", 15, pageHeight - 9);
+
+                    // TEKS FOOTER BIRU (#PASTILEBIHPUAS)
+                    doc.setFont("helvetica", "bolditalic");
+                    doc.setFontSize(14);
+                    doc.setTextColor(255, 255, 255);
+                    doc.text("#PASTILEBIHPUAS", 130, pageHeight - 11);
+
+                    // Vector Draw Logo Instagram Putih
+                    const igX = 130;
+                    const igY = pageHeight - 8.5;
+                    doc.setDrawColor(255, 255, 255);
+                    doc.setLineWidth(0.4);
+                    doc.roundedRect(igX, igY, 4.5, 4.5, 1, 1, 'S'); // Kotak IG
+                    doc.circle(igX + 2.25, igY + 2.25, 1.1, 'S'); // Lingkaran tengah IG
+                    doc.setFillColor(255, 255, 255);
+                    doc.circle(igX + 3.5, igY + 1, 0.3, 'F'); // Titik IG
+
+                    // Username Instagram
+                    doc.setFont("helvetica", "bold");
+                    doc.setFontSize(11);
+                    doc.text("@globalmart.id", igX + 6, pageHeight - 5.2);
                 };
 
                 // Gambar Header di Halaman Pertama
@@ -954,7 +988,7 @@
                     
                     if (imgId && imgId !== '-') {
                         try {
-                            const imgB64 = await loadImageBase64(`https://lh3.googleusercontent.com/d/${imgId}`);
+                            const imgObj = await loadImageBase64(`https://lh3.googleusercontent.com/d/${imgId}`);
                             
                             // 1. Gambar Kotak Batas Biru (Border)
                             doc.setDrawColor(15, 85, 200); 
@@ -963,7 +997,7 @@
                             
                             // 2. Sisipkan Gambar ke dalam kotak biru dengan sedikit padding
                             const pad = 1;
-                            doc.addImage(imgB64, 'JPEG', currentX + pad, currentY + pad, cellWidth - (pad*2), imageBoxHeight - (pad*2));
+                            doc.addImage(imgObj.dataUrl, 'PNG', currentX + pad, currentY + pad, cellWidth - (pad*2), imageBoxHeight - (pad*2));
                             
                             // 3. Render Teks SKU dan NAMA PRODUK
                             doc.setFontSize(cols <= 2 ? 10 : (cols <= 4 ? 8 : 6));
